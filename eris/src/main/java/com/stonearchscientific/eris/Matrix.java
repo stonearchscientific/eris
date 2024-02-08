@@ -1,13 +1,34 @@
-package com.stonearchscientific.common;
+package com.stonearchscientific.eris;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.BitSet;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Direction;
 public class Matrix {
+    public BitSet[] matrix;
+
+    public Matrix(int[][] matrix) {
+        this.matrix = new BitSet[matrix.length];
+        for (int i = 0; i < matrix.length; i++) {
+            this.matrix[i] = new BitSet(matrix[i].length);
+            for (int j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] == 1) {
+                    this.matrix[i].set(j);
+                }
+            }
+        }
+    }
+
+    public Matrix(int n, int m) {
+        matrix = new BitSet[n];
+        for (int i = 0; i < n; i++) {
+            matrix[i] = new BitSet(m);
+        }
+    }
     public static int[][] generateAdjacencyMatrix(Graph graph) {
         List<Vertex> vertices = new ArrayList<>();
         for (Vertex vertex : graph.getVertices()) {

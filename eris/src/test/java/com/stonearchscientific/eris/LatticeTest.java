@@ -1,4 +1,4 @@
-package com.stonearchscientific.common;
+package com.stonearchscientific.eris;
 
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;

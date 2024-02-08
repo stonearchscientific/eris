@@ -30,6 +30,16 @@
             <version>2.6.0</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.tinkerpop</groupId>
+            <artifactId>gremlin-core</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.tinkerpop</groupId>
+            <artifactId>tinkergraph-gremlin</artifactId>
+            <version>3.5.1</version>
+        </dependency>
+        <dependency>
             <groupId>guru.nidi</groupId>
             <artifactId>graphviz-java</artifactId>
             <version>0.17.0</version>
@@ -70,7 +80,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>lib/</classpathPrefix>
-                            <mainClass>com.stonearchscientific.service.Eris</mainClass>
+                            <mainClass>com.stonearchscientific.eris.Context</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -86,7 +96,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>com.stonearchscientific.service.Eris</mainClass>
+                            <mainClass>com.stonearchscientific.eris.Context</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
