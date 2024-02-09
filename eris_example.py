@@ -3,8 +3,8 @@ from jpype import JClass
 import graphviz
 
 eris = './eris-core/target/eris-core-1.0.0.jar'
-blueprints = './eris-core/target/blueprints-core-2.6.0.jar'
-guava = './eris-core/target/guava-31.0.1-jre.jar'
+blueprints = './eris-core/external/blueprints-core-2.6.0.jar'
+guava = './eris-core/external/guava-31.0.1-jre.jar'
 
 jpype.startJVM(classpath=[eris, blueprints, guava, 'classes'], convertStrings=False)
 
