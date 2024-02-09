@@ -23,9 +23,10 @@ objects = JClass('java.util.ArrayList')(["1", "2", "3", "4", "5"])
 attributes = JClass('java.util.ArrayList')(["a", "b", "c", "d", "e"])
 context = Context(objects, attributes, relation)
 
-f = open('eris-example-concept-lattice.dot', 'w', encoding='utf-8')
+filename = 'eris-example-context.dot'
+f = open(filename, 'w', encoding='utf-8')
 f.write(str(context.graphviz()))
 f.close()
 
-g = graphviz.Source.from_file('eris-example-concept-lattice.dot')
+g = graphviz.Source.from_file(filename)
 g.view()
