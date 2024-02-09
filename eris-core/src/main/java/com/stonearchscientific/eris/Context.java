@@ -48,9 +48,6 @@ public class Context<P, Q> {
      * @return a list of attributes corresponding to the BitSet
      */
     public List<Q> decodeAttributes(BitSet bits) {
-        // method implementation
-    }
-    public List<Q> decodeAttributes(BitSet bits) {
         List<Q> decodedAttributes = new ArrayList<>();
         for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
             decodedAttributes.add(this.attributes.get(i));
@@ -169,26 +166,4 @@ public class Context<P, Q> {
             e.printStackTrace();
         }
     }
-
-    public static void main(String[] args) {
-        int[][] example = {
-                {1, 1, 1, 1, 1},
-                {1, 1, 1, 0, 1},
-                {0, 0, 1, 1, 0},
-                {0, 0, 0, 0, 1},
-                {1, 1, 1, 1, 0}
-        };
-
-        Matrix relation = new Matrix(example);
-
-        Context.Builder<String, String> builder = new Context.Builder<>();
-        Context<String, String> context = builder.withObjects(Arrays.asList("1", "2", "3", "4", "5"))
-                                          .withAttributes(Arrays.asList("a", "b", "c", "d", "e"))
-                                          .withRelation(relation)
-                                          .build();
-
-        context.draw("example.png");
-
-    }
-
 }
