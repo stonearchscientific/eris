@@ -1,4 +1,4 @@
-package com.stonearchscientific.common;
+package com.stonearchscientific.eris;
 
 import java.util.BitSet;
 import com.google.common.collect.Range;

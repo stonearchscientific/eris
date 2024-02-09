@@ -1,4 +1,4 @@
-package com.stonearchscientific.common;
+package com.stonearchscientific.eris;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import static com.google.common.base.Preconditions.checkNotNull;
+
 
 public class Lattice<T, U> {
     private Vertex top, bottom;

@@ -1,4 +1,4 @@
-package com.stonearchscientific.common;
+package com.stonearchscientific.eris;
 
 import java.util.BitSet;
 import static org.junit.Assert.fail;
