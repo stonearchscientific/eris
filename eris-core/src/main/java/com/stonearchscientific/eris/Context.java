@@ -41,11 +41,10 @@ public class Context<P, Q> {
         return decodedObjects;
     }
     /**
-     * Decodes a BitSet into a list of attributes.
-     * The method matches BitSet membership from left to right.
+     * Decodes a BitSet into a list of attributes matchign membership from left to right.
      *
      * @param bits the BitSet to decode
-     * @return a list of attributes corresponding to the BitSet
+     * @return a list of attributes with membership indices represented the BitSet
      */
     public List<Q> decodeAttributes(BitSet bits) {
         List<Q> decodedAttributes = new ArrayList<>();
