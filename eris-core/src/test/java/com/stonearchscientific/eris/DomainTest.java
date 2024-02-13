@@ -33,6 +33,7 @@ public final class DomainTest {
         assertTrue(Domain.none().lessOrEqual(Domain.all()));
         assertTrue(Domain.none().lessOrEqual(Domain.none()));
         assertTrue(b.lessOrEqual(Domain.all()));
+        assertTrue(Domain.none().lessOrEqual(b));
         assertTrue(d.lessOrEqual(b));
         assertTrue(b.lessOrEqual(b));
         assertTrue(b.lessOrEqual(a));
@@ -40,6 +41,18 @@ public final class DomainTest {
         assertFalse(b.lessOrEqual(c));
         assertFalse(c.lessOrEqual(b));
         assertFalse(b.lessOrEqual(d));
+    }
+    @Test
+    public void testGreaterOrEqual() {
+        assertTrue(Domain.all().greaterOrEqual(Domain.all()));
+        assertTrue(Domain.all().greaterOrEqual(Domain.none()));
+        assertTrue(Domain.none().greaterOrEqual(Domain.none()));
+        assertTrue(Domain.all().greaterOrEqual(b));
+        assertTrue(b.greaterOrEqual(b));
+        assertTrue(b.greaterOrEqual(d));
+        assertFalse(b.greaterOrEqual(c));
+        assertFalse(c.greaterOrEqual(b));
+        assertFalse(d.greaterOrEqual(b));
     }
 
 }

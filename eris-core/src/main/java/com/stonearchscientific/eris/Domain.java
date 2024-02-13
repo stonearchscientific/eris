@@ -11,12 +11,12 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         super(extent, intent);
     }
     public static <C extends Comparable<?>, D extends Comparable<?>> Domain<C, D> all() {
-        return (Domain) ALL;
+        return new Domain<>(Range.all(), null);
     }
     public static <C extends Comparable<?>, D extends Comparable<?>> Domain<C, D> none() {
-        return (Domain) NONE;
+        return new Domain<>(null, Range.all());
     }
-    public Domain<C, D> intersect(final Domain<C, D> that) {
+    public Domain<? extends C, ? extends D> intersect(final Domain<? extends C, ? extends D> that) {
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot intersect Domain and " + that.getClass().getName() + ".");
         }
@@ -32,9 +32,13 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         if(that.intent == Range.all()) {
             return new Domain(this.extent, this.intent);
         }
-        if(this.intent.isConnected(that.intent)) {
+        Range<C> thisExtent = this.extent;
+        // Range<C> thatExtent = that.extent;
+        Range<D> thisIntent = this.intent;
+        Range<D> thatIntent = (Range) that.intent;
+        if(thisIntent.isConnected(thatIntent)) {
             // todo: check if this is the correct way to intersect the Concepts with Range as their extent type
-            return new Domain(this.extent, this.intent.intersection(that.intent));
+            return new Domain(thisExtent, thisIntent.intersection(thatIntent));
         }
         return new Domain(Range.all(), null);
 
@@ -49,7 +53,7 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         this.extent = rangeSet.span();
         return this;
     }
-    public boolean lessOrEqual(Domain<C, D> that) {
+    public boolean lessOrEqual(final Domain<? extends C, ? extends D> that) {
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot compare Domain and " + that.getClass().getName() + ".");
         }
@@ -63,7 +67,7 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         Range thatIntent = that.intent;
         return intersectIntent == that.intent;
     }
-    public boolean greaterOrEqual(Domain<C, D> that) {
+    public boolean greaterOrEqual(final Domain<? extends C, ? extends D> that) {
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot compare Domain and " + that.getClass().getName() + ".");
         }
