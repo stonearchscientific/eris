@@ -4,7 +4,7 @@ import com.google.common.collect.Range;
 import com.google.common.collect.RangeSet;
 import com.google.common.collect.TreeRangeSet;
 
-public final class Domain<C extends Comparable, D extends Comparable> extends AbstractConcept<Range<C>, Range<D>> {
+public final class Domain<C extends Comparable, D extends Comparable> extends AbstractConcept<Range<C>, Range<D>, Domain<C, D>> {
     private static final Domain ALL = new Domain<>(Range.all(), null);
     private static final Domain NONE = new Domain<>(null, Range.all());
     public Domain(Range<C> extent, Range<D> intent) {
@@ -53,7 +53,7 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         this.extent = rangeSet.span();
         return this;
     }
-    public boolean lessOrEqual(final Domain<? extends C, ? extends D> that) {
+    public boolean lessOrEqual(final Domain<C, D> that) {
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot compare Domain and " + that.getClass().getName() + ".");
         }
@@ -67,10 +67,13 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         Range thatIntent = that.intent;
         return intersectIntent == that.intent;
     }
-    public boolean greaterOrEqual(final Domain<? extends C, ? extends D> that) {
+
+    public boolean greaterOrEqual(final Domain<C, D> that) {
+        System.out.println("GOT TO INSTANCE OF CHECK");
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot compare Domain and " + that.getClass().getName() + ".");
         }
+        System.out.println("GOT PAST instanceof check");
         if(this.intent == null) { // this == ALL
             return true;
         }
@@ -80,5 +83,16 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         Range intersectIntent = this.intersect(that).intent;
         Range thatIntent = that.intent;
         return intersectIntent == this.intent;
+    }
+    @Override
+    public boolean equals(final Object that) {
+        if (!(that instanceof Domain)) {
+            return false;
+        }
+        if (that == this) {
+            return true;
+        }
+        Domain domain = (Domain) that;
+        return java.util.Objects.equals(domain.extent, this.extent) && java.util.Objects.equals(domain.intent, this.intent);
     }
 }

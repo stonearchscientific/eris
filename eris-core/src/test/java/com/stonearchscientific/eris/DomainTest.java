@@ -10,13 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 public final class DomainTest {
-    private Domain<Integer, Integer> a, b, c, d;
+    private Domain<Integer, Integer> a, b, c, d, z;
     @Before
     public void setUp() {
-        a = new Domain<>(Range.all(), null);
+        a = Domain.all();
         b = new Domain<>(Range.closed(3, 4), Range.closed(3, 4));
         c = new Domain<>(Range.closed(1, 2), Range.closed(1, 2));
         d = new Domain<>(Range.closed(0, 4), Range.closed(0, 4));
+        z = Domain.none();
     }
     @Test
     public void testSetUp() {
@@ -29,15 +30,15 @@ public final class DomainTest {
     }
     @Test
     public void testLessOrEqual() {
-        assertTrue(Domain.all().lessOrEqual(Domain.all()));
-        assertTrue(Domain.none().lessOrEqual(Domain.all()));
-        assertTrue(Domain.none().lessOrEqual(Domain.none()));
+        assertTrue(a.lessOrEqual(Domain.all()));
+        assertTrue(z.lessOrEqual(Domain.all()));
+        assertTrue(z.lessOrEqual(Domain.none()));
         assertTrue(b.lessOrEqual(Domain.all()));
-        assertTrue(Domain.none().lessOrEqual(b));
         assertTrue(d.lessOrEqual(b));
         assertTrue(b.lessOrEqual(b));
         assertTrue(b.lessOrEqual(a));
         assertTrue(d.lessOrEqual(b));
+        assertFalse(a.lessOrEqual(z));
         assertFalse(b.lessOrEqual(c));
         assertFalse(c.lessOrEqual(b));
         assertFalse(b.lessOrEqual(d));
@@ -47,12 +48,23 @@ public final class DomainTest {
         assertTrue(Domain.all().greaterOrEqual(Domain.all()));
         assertTrue(Domain.all().greaterOrEqual(Domain.none()));
         assertTrue(Domain.none().greaterOrEqual(Domain.none()));
-        assertTrue(Domain.all().greaterOrEqual(b));
+        assertTrue(b.greaterOrEqual(Domain.none()));
+        assertTrue(a.greaterOrEqual(b));
         assertTrue(b.greaterOrEqual(b));
         assertTrue(b.greaterOrEqual(d));
         assertFalse(b.greaterOrEqual(c));
         assertFalse(c.greaterOrEqual(b));
         assertFalse(d.greaterOrEqual(b));
+    }
+    @Test
+    public void testEquals() {
+        assertEquals(Domain.all(), Domain.all());
+        assertEquals(Domain.none(), Domain.none());
+        assertEquals(Domain.all(), a);
+        assertEquals(Domain.none(), new Domain<>(null, Range.all()));
+        assertEquals(b, b);
+        assertFalse(b.equals(c));
+
     }
 
 }
