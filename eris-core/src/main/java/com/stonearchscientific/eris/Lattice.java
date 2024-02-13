@@ -30,17 +30,15 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         this.bottom = graph.addVertex(null);
         this.bottom.setProperty(LABEL, bottom);
         //this.bottom.setProperty(COLOR, color);
-        System.out.println("constructor added bottom vertex: " + this.bottom.getProperty(LABEL));
+        //System.out.println("constructor added bottom vertex: " + this.bottom.getProperty(LABEL));
         this.top = this.bottom;
-        System.out.println("top: " + this.top.getProperty(LABEL));
+        //System.out.println("top: " + this.top.getProperty(LABEL));
         size = 1;
     }
     public Vertex top() {
-        return top;
+        return up ? top : bottom;
     }
-    public Vertex bottom() {
-        return bottom;
-    }
+    public Vertex bottom() { return up ? bottom : top; }
     public Lattice<T, U> dual() {
         up = up ? false : true;
         return this;
@@ -81,9 +79,15 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
             throw new UnsupportedOperationException("remove");
         }
     }
-    public Iterator<T, U> iterator() {
-        return up ? new Iterator(bottom, up) : new Iterator(top, up);
-    }
+
+    /**
+     *
+     * @return new iterator starting from the bottom concept
+     * Note: Iterator is constructed from the method Lattice.bottom() instead of the attribute
+     * Lattice.bottom. This is for consistency when construction happens in a static context outside of a Lattice
+     * instance.
+     */
+    public Iterator<T, U> iterator() { return new Iterator(bottom(), up); }
     public Iterator<T, U> iterator(final Concept<T, U> start) {
         Vertex found = supremum(start, bottom);
         return new Iterator(found, up);
@@ -109,7 +113,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
     }
 
     private boolean filter(final Concept<T, U> left, final Concept<T, U> right) {
-        System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
+        //System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
         return right.greaterOrEqual(left);
     }
     /*
@@ -138,7 +142,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
             max = false;
             for (Edge edge : generator.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
-                System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
+                //System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
                 if (filter(target, generator)) {
                     continue;
                 }
@@ -180,7 +184,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
 
     private Vertex addVertex(final Graph graph, final Concept<T, U> label) {
         Vertex child = graph.addVertex(null);
-        System.out.println("addVertex(" + label + ")");
+        //System.out.println("addVertex(" + label + ")");
         child.setProperty("label", label);
         //child.setProperty("color", color);
         ++size;
@@ -189,14 +193,14 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
 
     private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
-        System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
         ++order;
         return edge;
     }
 
     private void removeUndirectedEdge(final Graph graph, final Vertex source, final Vertex target) {
-        System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        //System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         for (Edge edge : source.getEdges(Direction.BOTH)) {
             if (edge.getVertex(Direction.OUT).equals(target)) {
                 graph.removeEdge(edge);
@@ -212,7 +216,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
     }
 
     public final Vertex addIntent(final Graph graph, final Concept<T, U> proposed, Vertex generator) {
-        System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
+        //System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
         generator = supremum(proposed, generator);
 
         if (filter(generator, proposed) && filter(proposed, generator)) {
@@ -230,7 +234,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
             if (!filter(target, proposed) && !filter(proposed, target)) {
                 Concept<T, U> targetElement = target.getProperty(LABEL);
                 Concept<T, U> intersect = (Concept<T, U>) targetElement.intersect(proposed);
-                System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
+                //System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
                 candidate = addIntent(graph, intersect, candidate);
             }
 
