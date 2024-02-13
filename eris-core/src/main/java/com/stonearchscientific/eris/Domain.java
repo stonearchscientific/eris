@@ -16,7 +16,7 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
     public static <C extends Comparable<?>, D extends Comparable<?>> Domain<C, D> none() {
         return new Domain<>(null, Range.all());
     }
-    public Domain<? extends C, ? extends D> intersect(final Domain<? extends C, ? extends D> that) {
+    public Domain<C, D> intersect(final Domain<C, D> that) {
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot intersect Domain and " + that.getClass().getName() + ".");
         }
