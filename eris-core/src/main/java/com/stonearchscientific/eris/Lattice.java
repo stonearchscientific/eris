@@ -14,7 +14,8 @@ import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class Lattice<T, U> {
+public class Lattice<T, U> implements Iterable<Concept<T, U>> {
+    private boolean up;
     private Vertex top, bottom;
     private int size, order, color;
     static final String LABEL = "label";
@@ -23,49 +24,74 @@ public class Lattice<T, U> {
 
     public Lattice(Graph graph, final Concept<T, U> bottom) {
         checkNotNull(graph);
+        up = true;
         order = 0;
         //color = 0;
         this.bottom = graph.addVertex(null);
         this.bottom.setProperty(LABEL, bottom);
         //this.bottom.setProperty(COLOR, color);
-        System.out.println("constructor added bottom vertex: " + this.bottom.getProperty(LABEL));
+        //System.out.println("constructor added bottom vertex: " + this.bottom.getProperty(LABEL));
         this.top = this.bottom;
-        System.out.println("top: " + this.top.getProperty(LABEL));
+        //System.out.println("top: " + this.top.getProperty(LABEL));
         size = 1;
     }
-
     public Vertex top() {
-        return top;
+        return up ? top : bottom;
     }
-
-    public Vertex bottom() {
-        return bottom;
+    public Vertex bottom() { return up ? bottom : top; }
+    public Lattice<T, U> dual() {
+        up = up ? false : true;
+        return this;
     }
-
-
-    public class Iterator<T, U> implements java.util.Iterator<Concept<T, U>> {
-        private final java.util.Iterator<Vertex> vertices;
-
-        public Iterator(final Graph graph) {
-            vertices = graph.getVertices().iterator();
+    public static class Iterator<T, U> implements java.util.Iterator<Concept<T, U>> {
+        private boolean up;
+        private Set<Vertex> visited;
+        private List<Vertex> queue;
+        public Iterator(final Vertex start, boolean up) {
+            this.up = up;
+            visited = new HashSet<>();
+            visited.add(start);
+            queue = new ArrayList<>();
+            queue.add(start);
         }
-
         @Override
         public boolean hasNext() {
-            return vertices.hasNext();
+            return !queue.isEmpty();
         }
-
         @Override
         public Concept<T, U> next() {
-            return vertices.next().getProperty(LABEL);
-        }
+            Vertex visiting = queue.remove(0);
+            Concept<T, U> visitingConcept = visiting.getProperty(LABEL);
 
+            for (Edge edge : visiting.getEdges(Direction.BOTH)) {
+                Vertex target = edge.getVertex(Direction.OUT);
+                Concept<T, U> targetConcept = target.getProperty(LABEL);
+                boolean proceed = up ? targetConcept.greaterOrEqual(visitingConcept) : targetConcept.lessOrEqual(visitingConcept);
+                if (!visited.contains(target) && proceed) {
+                    visited.add(target);
+                    queue.add(target);
+                }
+            }
+            return visitingConcept;
+        }
         @Override
         public void remove() {
             throw new UnsupportedOperationException("remove");
         }
     }
 
+    /**
+     *
+     * @return new iterator starting from the bottom concept
+     * Note: Iterator is constructed from the method Lattice.bottom() instead of the attribute
+     * Lattice.bottom. This is for consistency when construction happens in a static context outside of a Lattice
+     * instance.
+     */
+    public Iterator<T, U> iterator() { return new Iterator(bottom(), up); }
+    public Iterator<T, U> iterator(final Concept<T, U> start) {
+        Vertex found = supremum(start, bottom);
+        return new Iterator(found, up);
+    }
     public boolean filter(final Vertex source, final Vertex target) {
         Concept<T, U> sourceConcept = source.getProperty(LABEL);
         Concept<T, U> targetConcept = target.getProperty(LABEL);
@@ -87,7 +113,7 @@ public class Lattice<T, U> {
     }
 
     private boolean filter(final Concept<T, U> left, final Concept<T, U> right) {
-        System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
+        //System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
         return right.greaterOrEqual(left);
     }
     /*
@@ -110,13 +136,13 @@ public class Lattice<T, U> {
     }
     return generator;
 }*/
-    protected final Vertex supremum(final Graph graph, final Concept<T, U> proposed, Vertex generator) {
+    protected final Vertex supremum(final Concept<T, U> proposed, Vertex generator) {
         boolean max = true;
         while (max) {
             max = false;
             for (Edge edge : generator.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
-                System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
+                //System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
                 if (filter(target, generator)) {
                     continue;
                 }
@@ -134,6 +160,7 @@ public class Lattice<T, U> {
 
     public Vertex insert(final Graph graph, final Concept<T, U> concept) {
         Vertex added = addIntent(graph, concept, bottom);
+        // TODO: replace with iteration
         Set<Vertex> visited = new HashSet<>();
         visited.add(added);
         List<Vertex> queue = new ArrayList<>();
@@ -151,13 +178,13 @@ public class Lattice<T, U> {
                     queue.add(target);
                 }
             }
-        }
+        } // TODO: end
         return added;
     }
 
     private Vertex addVertex(final Graph graph, final Concept<T, U> label) {
         Vertex child = graph.addVertex(null);
-        System.out.println("addVertex(" + label + ")");
+        //System.out.println("addVertex(" + label + ")");
         child.setProperty("label", label);
         //child.setProperty("color", color);
         ++size;
@@ -166,14 +193,14 @@ public class Lattice<T, U> {
 
     private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
-        System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
         ++order;
         return edge;
     }
 
     private void removeUndirectedEdge(final Graph graph, final Vertex source, final Vertex target) {
-        System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        //System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         for (Edge edge : source.getEdges(Direction.BOTH)) {
             if (edge.getVertex(Direction.OUT).equals(target)) {
                 graph.removeEdge(edge);
@@ -189,8 +216,8 @@ public class Lattice<T, U> {
     }
 
     public final Vertex addIntent(final Graph graph, final Concept<T, U> proposed, Vertex generator) {
-        System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
-        generator = supremum(graph, proposed, generator);
+        //System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
+        generator = supremum(proposed, generator);
 
         if (filter(generator, proposed) && filter(proposed, generator)) {
             return generator;
@@ -207,7 +234,7 @@ public class Lattice<T, U> {
             if (!filter(target, proposed) && !filter(proposed, target)) {
                 Concept<T, U> targetElement = target.getProperty(LABEL);
                 Concept<T, U> intersect = (Concept<T, U>) targetElement.intersect(proposed);
-                System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
+                //System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
                 candidate = addIntent(graph, intersect, candidate);
             }
 

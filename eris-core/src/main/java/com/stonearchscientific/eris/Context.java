@@ -1,6 +1,5 @@
 package com.stonearchscientific.eris;
 
-import com.stonearchscientific.eris.Matrix;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
@@ -17,15 +16,15 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-public class Context<P, Q> {
-
+public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
+    private boolean up;
     private Graph graph;
     private List<P> objects;
     private List<Q> attributes;
     private Type objectType;
     private Type attributeType;
     private Matrix relation;
-    private Lattice lattice;
+    private Lattice<BitSet, BitSet> lattice;
 
     public static enum Type {
         DATE,
@@ -41,11 +40,10 @@ public class Context<P, Q> {
         return decodedObjects;
     }
     /**
-     * Decodes a BitSet into a list of attributes.
-     * The method matches BitSet membership from left to right.
+     * Decodes a BitSet into a list of attributes matchign membership from left to right.
      *
      * @param bits the BitSet to decode
-     * @return a list of attributes corresponding to the BitSet
+     * @return a list of attributes with membership indices represented the BitSet
      */
     public List<Q> decodeAttributes(BitSet bits) {
         List<Q> decodedAttributes = new ArrayList<>();
@@ -95,6 +93,7 @@ public class Context<P, Q> {
         return sb.toString();
     }
     public Context(List<P> objects, List<Q> attributes, Matrix relation) {
+        up = true;
         graph = new TinkerGraph();
         this.objects = objects;
         this.attributes = attributes;
@@ -108,6 +107,34 @@ public class Context<P, Q> {
             Concept<BitSet, BitSet> concept = new Concept<>(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
+    }
+    public void dual() { up = up ? false : true; }
+    public static class Iterator<P, Q> implements java.util.Iterator<Concept<BitSet, BitSet>> {
+        private Lattice.Iterator<BitSet, BitSet> iterator;
+        public Iterator(final Lattice.Iterator<BitSet, BitSet> iterator) {
+            this.iterator = iterator;
+        }
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
+        }
+        @Override
+        public Concept<BitSet, BitSet> next() {
+            return iterator.next();
+        }
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("remove");
+        }
+    }
+    public Iterator<P, Q> iterator() {
+        Lattice.Iterator<BitSet, BitSet> iterator;
+        if(up) {
+            iterator = lattice.iterator();
+        } else {
+            iterator = lattice.dual().iterator();
+        }
+        return new Iterator(iterator);
     }
     public static class Builder<P, Q> {
         private List<P> objects;
