@@ -24,8 +24,8 @@ import java.util.List;
 public class LatticeTest {
     private Graph graph;
     List<String> objects, attributes;
-    Concept<BitSet, BitSet> c1, c2, c3, c4, c5;
-    Lattice<BitSet, BitSet> lattice;
+    Concept c1, c2, c3, c4, c5;
+    Lattice<Concept> lattice;
 
     int[][] expected = {
             {0, 1, 0, 1, 0, 0, 0, 0},
@@ -64,13 +64,13 @@ public class LatticeTest {
         objects = Arrays.asList("1", "2", "3", "4", "5");
         attributes = Arrays.asList("a", "b", "c", "d", "e");
 
-        c1 = new Concept<>(bitset("00001"), bitset("11111"));
-        c2 = new Concept<>(bitset("00010"), bitset("10111"));
-        c3 = new Concept<>(bitset("00100"), bitset("01100"));
-        c4 = new Concept<>(bitset("01000"), bitset("10000"));
-        c5 = new Concept<>(bitset("10000"), bitset("01111"));
+        c1 = new Concept(bitset("00001"), bitset("11111"));
+        c2 = new Concept(bitset("00010"), bitset("10111"));
+        c3 = new Concept(bitset("00100"), bitset("01100"));
+        c4 = new Concept(bitset("01000"), bitset("10000"));
+        c5 = new Concept(bitset("10000"), bitset("01111"));
 
-        lattice = new Lattice<>(graph, c1);
+        lattice = new Lattice(graph, c1);
         lattice.insert(graph, c2);
         lattice.insert(graph, c3);
         lattice.insert(graph, c4);
@@ -99,7 +99,7 @@ public class LatticeTest {
      */
     @Test
     public void testIterator() {
-        Lattice.Iterator<BitSet, BitSet> iterator = lattice.iterator();
+        Lattice.Iterator<Concept> iterator = lattice.iterator();
         int count = 0;
         for(; iterator.hasNext(); iterator.next()) { count++; }
         assertEquals(count, 8);
@@ -111,13 +111,13 @@ public class LatticeTest {
         iterator = lattice.iterator();
         System.out.println("LATTICE");
         while(iterator.hasNext()) {
-            Concept<BitSet, BitSet> concept = iterator.next();
+            Concept concept = iterator.next();
             System.out.println("Concept: " + concept);
         }
         System.out.println("DUAL LATTICE");
         iterator = lattice.dual().iterator();
         while(iterator.hasNext()) {
-            Concept<BitSet, BitSet> concept = iterator.next();
+            Concept concept = iterator.next();
             System.out.println("Concept: " + concept);
         }
     }

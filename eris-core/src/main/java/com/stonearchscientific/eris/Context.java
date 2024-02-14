@@ -24,7 +24,7 @@ public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
     private Type objectType;
     private Type attributeType;
     private Matrix relation;
-    private Lattice<BitSet, BitSet> lattice;
+    private Lattice<Concept> lattice;
 
     public static enum Type {
         DATE,
@@ -99,19 +99,19 @@ public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
         this.attributes = attributes;
         BitSet all = new BitSet();
         all.set(0, objects.size());
-        lattice = new Lattice<BitSet, BitSet>(graph, new Concept<BitSet, BitSet>(new BitSet(attributes.size()), all));
+        lattice = new Lattice<Concept>(graph, new Concept(new BitSet(attributes.size()), all));
         this.relation = relation;
         for (int i = 0; i < this.relation.matrix.length; i++) {
             BitSet extent = new BitSet();
             extent.flip(i);
-            Concept<BitSet, BitSet> concept = new Concept<>(extent, this.relation.matrix[i]);
+            Concept concept = new Concept(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
     }
     public void dual() { up = up ? false : true; }
-    public static class Iterator<P, Q> implements java.util.Iterator<Concept<BitSet, BitSet>> {
-        private Lattice.Iterator<BitSet, BitSet> iterator;
-        public Iterator(final Lattice.Iterator<BitSet, BitSet> iterator) {
+    public static class Iterator<P, Q> implements java.util.Iterator<Concept> {
+        private Lattice.Iterator<Concept> iterator;
+        public Iterator(final Lattice.Iterator<Concept> iterator) {
             this.iterator = iterator;
         }
         @Override
@@ -119,7 +119,7 @@ public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
             return iterator.hasNext();
         }
         @Override
-        public Concept<BitSet, BitSet> next() {
+        public Concept next() {
             return iterator.next();
         }
         @Override
@@ -128,7 +128,7 @@ public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
         }
     }
     public Iterator<P, Q> iterator() {
-        Lattice.Iterator<BitSet, BitSet> iterator;
+        Lattice.Iterator<Concept> iterator;
         if(up) {
             iterator = lattice.iterator();
         } else {
