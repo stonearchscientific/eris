@@ -33,7 +33,7 @@ public class ContextTest {
     }
     @Test
     public void testIterator() {
-        Context.Iterator<String, String> iterator = context.iterator();
+        Context.Iterator<Concept> iterator = context.iterator();
         while (iterator.hasNext()) {
             System.out.println("Context:Concept = " + iterator.next());
         }

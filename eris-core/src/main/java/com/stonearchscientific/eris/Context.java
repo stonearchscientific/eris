@@ -16,22 +16,10 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-public class Context<P, Q> implements Relation<Concept> {
-    private boolean up;
-    private Graph graph;
+public class Context<P, Q> extends AbstractContext<Concept> {
     private List<P> objects;
     private List<Q> attributes;
-    private Type objectType;
-    private Type attributeType;
     private Matrix relation;
-    private Lattice<Concept> lattice;
-
-    public static enum Type {
-        DATE,
-        INTEGER,
-        DOUBLE,
-        NONCOMPARABLE
-    };
     public List<P> decodeObjects(BitSet bits) {
         List<P> decodedObjects = new ArrayList<>();
         for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
@@ -40,7 +28,7 @@ public class Context<P, Q> implements Relation<Concept> {
         return decodedObjects;
     }
     /**
-     * Decodes a BitSet into a list of attributes matchign membership from left to right.
+     * Decodes a BitSet into a list of attributes matching membership from left to right.
      *
      * @param bits the BitSet to decode
      * @return a list of attributes with membership indices represented the BitSet
@@ -109,47 +97,26 @@ public class Context<P, Q> implements Relation<Concept> {
         }
     }
     public void dual() { up = up ? false : true; }
-    public static class Iterator<P, Q> implements java.util.Iterator<Concept> {
-        private Lattice.Iterator<Concept> iterator;
-        public Iterator(final Lattice.Iterator<Concept> iterator) {
-            this.iterator = iterator;
-        }
-        @Override
-        public boolean hasNext() {
-            return iterator.hasNext();
-        }
-        @Override
-        public Concept next() {
-            return iterator.next();
-        }
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove");
-        }
-    }
-    public Iterator<P, Q> iterator() {
+
+    public Context.Iterator<Concept> iterator() {
         Lattice.Iterator<Concept> iterator;
         if(up) {
             iterator = lattice.iterator();
         } else {
             iterator = lattice.dual().iterator();
         }
-        return new Iterator(iterator);
+        return new Context.Iterator<>(iterator);
     }
     public static class Builder<P, Q> {
         private List<P> objects;
         private List<Q> attributes;
-        private Type objectType;
-        private Type attributeType;
         private Matrix relation;
 
-        public Builder<P, Q> withObjects(Type type) {
-            this.objectType = type;
+        public Builder<P, Q> withObjects() {
             return this;
         }
 
-        public Builder<P, Q> withAttributes(Type type) {
-            this.attributeType = type;
+        public Builder<P, Q> withAttributes() {
             return this;
         }
 

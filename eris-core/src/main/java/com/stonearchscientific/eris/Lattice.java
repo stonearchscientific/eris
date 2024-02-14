@@ -17,10 +17,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Lattice<R extends Relatable> implements Iterable<R> {
     private boolean up;
     private Vertex top, bottom;
-    private int size, order, color;
+    private int size, order;
     static final String LABEL = "label";
-    static final String COLOR = "color";
-    static final long NUM_BITS = 64;
 
     public Lattice(Graph graph, final R bottom) {
         checkNotNull(graph);
@@ -43,6 +41,8 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         up = up ? false : true;
         return this;
     }
+    public int size() { return size; }
+    public int order() { return order; }
     public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
         private boolean up;
         private Set<Vertex> visited;
@@ -181,7 +181,6 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         } // TODO: end
         return added;
     }
-
     private Vertex addVertex(final Graph graph, final R label) {
         Vertex child = graph.addVertex(null);
         //System.out.println("addVertex(" + label + ")");
@@ -190,31 +189,30 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         ++size;
         return child;
     }
-
     private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
         //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
-        ++order;
+        order += 2;
         return edge;
     }
-
     private void removeUndirectedEdge(final Graph graph, final Vertex source, final Vertex target) {
         //System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         for (Edge edge : source.getEdges(Direction.BOTH)) {
             if (edge.getVertex(Direction.OUT).equals(target)) {
                 graph.removeEdge(edge);
                 //break;
+                --order;
             }
 
             if (edge.getVertex(Direction.IN).equals(target)) {
                 graph.removeEdge(edge);
+                --order;
                 //break;
             }
-        }
-        --order;
-    }
 
+        }
+    }
     public final Vertex addIntent(final Graph graph, final R proposed, Vertex generator) {
         //System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
         generator = supremum(proposed, generator);

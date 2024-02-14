@@ -3,25 +3,18 @@ package com.stonearchscientific.eris;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-import java.io.File;
-import java.util.ArrayList;
-import guru.nidi.graphviz.engine.Format;
-import guru.nidi.graphviz.engine.Graphviz;
-import guru.nidi.graphviz.model.MutableGraph;
-import guru.nidi.graphviz.parse.Parser;
 
 
 import java.util.BitSet;
 import java.util.Arrays;
 import java.util.List;
 
-public class LatticeTest {
+public class ConceptLatticeTest {
     private Graph graph;
     List<String> objects, attributes;
     Concept c1, c2, c3, c4, c5;
@@ -80,6 +73,8 @@ public class LatticeTest {
     public void testSetup() {
         assertEquals(numberOfVertices(graph), 8);
         assertEquals(numberOfEdges(graph), 20);
+        assertEquals(lattice.size(), 8);
+        assertEquals(lattice.order(), 20);
     }
     @Test
     public void testAddIntent() {
