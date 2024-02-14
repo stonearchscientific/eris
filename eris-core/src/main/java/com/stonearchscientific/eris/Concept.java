@@ -14,13 +14,11 @@ import com.google.common.collect.Range;
  * - G is the set of objects<br>
  * - M is the set of attributes<br>
  * - I is a binary relation between G and M<br>
- * - A is the extent of the concept (each element having type T)<br>
- * - B is the intent of the concept (each element having type U)<br>
+ * - A is the extent of the concept<br>
+ * - B is the intent of the concept<br>
  * - A' is the set of all attributes that are common to all objects in A<br>
  * - B' is the set of all objects that have all attributes in B<br>
  * Davey, BA, &amp; Priestley, HA (2002). Introduction to Lattices and Order (2nd ed.). Cambridge University Press<br>
- * @param <T> extent element type<br>
- * @param <U> intent element type<br>
  */
 public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
 

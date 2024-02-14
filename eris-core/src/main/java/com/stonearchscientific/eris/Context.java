@@ -16,7 +16,7 @@ import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
+public class Context<P, Q> implements Relation<Concept> {
     private boolean up;
     private Graph graph;
     private List<P> objects;
