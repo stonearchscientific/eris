@@ -11,6 +11,9 @@ import java.util.Arrays;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 public class ContextTest {
     int[][] example = {
             {1, 1, 1, 1, 1},
@@ -21,6 +24,9 @@ public class ContextTest {
     };
     Matrix relation;
     Context context;
+    private BitSet bitset(String bitstring) {
+        return BitSet.valueOf(new long[]{Long.parseLong(bitstring, 2)});
+    }
     @Before
     public void setUp() {
         relation = new Matrix(example);
@@ -34,8 +40,35 @@ public class ContextTest {
     @Test
     public void testIterator() {
         Context.Iterator<Concept> iterator = context.iterator();
-        while (iterator.hasNext()) {
-            System.out.println("Context:Concept = " + iterator.next());
+        int count = 1;
+        Concept last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
         }
+        assertEquals(last, new Concept(bitset("00001"), bitset("11111")));
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
+        assertEquals(count, 8);
+        assertEquals(last, new Concept(bitset("11111"), bitset("00000")));
+
+        iterator = context.dual().iterator();
+        count = 1;
+        last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
+        }
+        assertEquals(last, new Concept(bitset("11111"), bitset("00000")));
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
+        assertEquals(count, 8);
+        assertEquals(last, new Concept(bitset("00001"), bitset("11111")));
     }
 }

@@ -87,7 +87,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         this.attributes = attributes;
         BitSet all = new BitSet();
         all.set(0, objects.size());
-        lattice = new Lattice<Concept>(graph, new Concept(new BitSet(attributes.size()), all));
+        lattice = new Lattice<>(graph, new Concept(new BitSet(attributes.size()), all));
         this.relation = relation;
         for (int i = 0; i < this.relation.matrix.length; i++) {
             BitSet extent = new BitSet();
@@ -96,17 +96,9 @@ public class Context<P, Q> extends AbstractContext<Concept> {
             lattice.insert(graph, concept);
         }
     }
-    public void dual() { up = up ? false : true; }
 
-    public Context.Iterator<Concept> iterator() {
-        Lattice.Iterator<Concept> iterator;
-        if(up) {
-            iterator = lattice.iterator();
-        } else {
-            iterator = lattice.dual().iterator();
-        }
-        return new Context.Iterator<>(iterator);
-    }
+
+
     public static class Builder<P, Q> {
         private List<P> objects;
         private List<Q> attributes;
@@ -145,7 +137,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
 
              */
 
-            return new Context(this.objects, this.attributes, this.relation);
+            return new Context<>(this.objects, this.attributes, this.relation);
         }
 
     }

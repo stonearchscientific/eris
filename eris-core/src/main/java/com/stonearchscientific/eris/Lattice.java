@@ -87,10 +87,11 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
      * Lattice.bottom. This is for consistency when construction happens in a static context outside of a Lattice
      * instance.
      */
-    public Iterator<R> iterator() { return new Iterator(bottom(), up); }
-    public Iterator<R> iterator(final R start) {
-        Vertex found = supremum(start, bottom);
-        return new Iterator(found, up);
+    @Override
+    public Iterator<R> iterator() { return new Iterator<>(bottom(), up); }
+    public Iterator<R> iterator(final R from) {
+        Vertex found = supremum(from, bottom);
+        return new Iterator<>(found, up);
     }
     public boolean filter(final Vertex source, final Vertex target) {
         R sourceConcept = source.getProperty(LABEL);
