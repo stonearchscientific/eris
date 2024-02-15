@@ -5,12 +5,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.BitSet;
+
+import java.util.*;
 import java.io.File;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
@@ -96,8 +92,21 @@ public class Context<P, Q> extends AbstractContext<Concept> {
             lattice.insert(graph, concept);
         }
     }
-
-
+    public boolean contains(Object o) {
+        if (o instanceof Concept) {
+            Concept concept = (Concept) o;
+            return lattice.find(concept).equals(concept);
+        }
+        return false;
+    }
+    public boolean containsAll(Collection<?> c) {
+        for (Object o : c) {
+            if (!contains(o)) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     public static class Builder<P, Q> {
         private List<P> objects;
@@ -151,5 +160,13 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Context) {
+            Context context = (Context) o;
+            return Arrays.equals(this.toArray(), context.toArray());
+        }
+        return false;
     }
 }

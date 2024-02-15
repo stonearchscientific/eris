@@ -30,12 +30,26 @@ public class ContextTest {
     @Before
     public void setUp() {
         relation = new Matrix(example);
-        context = new Context(new ArrayList<String>(Arrays.asList("1", "2", "3", "4", "5")),
-                  new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e")), relation);
+        context = new Context(new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5")),
+                  new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e")), relation);
     }
     @Test
     public void testDual() {
         context.dual();
+    }
+    @Test
+    public void testAdd() {
+        int[][] example2 = {
+                {1, 1, 1, 1, 1},
+                {1, 1, 1, 0, 1},
+                {0, 0, 1, 1, 0},
+        };
+        Matrix relation2 = new Matrix(example2);
+        Context context2 = new Context(new ArrayList<>(Arrays.asList("1", "2", "3", "4", "5")),
+                  new ArrayList<>(Arrays.asList("a", "b", "c", "d", "e")), relation2);
+        context2.add(new Concept(bitset("01000"), bitset("10000")));
+        context2.add(new Concept(bitset("10000"), bitset("01111")));
+        context2.draw("testAdd.png");
     }
     @Test
     public void testIterator() {

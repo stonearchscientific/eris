@@ -41,6 +41,11 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         up = up ? false : true;
         return this;
     }
+    public void clear() {
+        top = bottom;
+        size = 0;
+        order = 0;
+    }
     public int size() { return size; }
     public int order() { return order; }
     public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
@@ -158,9 +163,13 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         }
         return generator;
     }
+    public R find(final R proposed) {
+        Vertex found = supremum(proposed, bottom);
+        return found.getProperty(LABEL);
+    }
 
-    public Vertex insert(final Graph graph, final R concept) {
-        Vertex added = addIntent(graph, concept, bottom);
+    public Vertex insert(final Graph graph, final R relatable) {
+        Vertex added = addIntent(graph, relatable, bottom);
         // TODO: replace with iteration
         Set<Vertex> visited = new HashSet<>();
         visited.add(added);
@@ -170,7 +179,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         while (!queue.isEmpty()) {
             Vertex visiting = queue.remove(0);
             R visitingConcept = visiting.getProperty(LABEL);
-            visitingConcept.union(concept);
+            visitingConcept.union(relatable);
 
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
@@ -277,6 +286,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         }
         return child;
     }
+
 
 
 }
