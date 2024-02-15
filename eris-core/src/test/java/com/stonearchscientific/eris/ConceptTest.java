@@ -9,8 +9,8 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
-public final class BitSetConceptTest {
-    private Concept<BitSet, BitSet> w, x, y, z;
+public final class ConceptTest {
+    private Concept w, x, y, z;
 
     private BitSet bitset(String bitstring) {
         return BitSet.valueOf(new long[]{Long.parseLong(bitstring, 2)});
@@ -18,14 +18,14 @@ public final class BitSetConceptTest {
 
     @Before
     public void setUp() {
-        w = new Concept<>(bitset("11111"), bitset("00000"));
-        x = new Concept<>(bitset("11010"), bitset("00001"));
-        y = new Concept<>(bitset("11101"), bitset("00100"));
-        z = new Concept<>(bitset("11000"), bitset("11101"));
+        w = new Concept(bitset("11111"), bitset("00000"));
+        x = new Concept(bitset("11010"), bitset("00001"));
+        y = new Concept(bitset("11101"), bitset("00100"));
+        z = new Concept(bitset("11000"), bitset("11101"));
     }
     @Test
     public void testConstructor() {
-        Concept<BitSet, BitSet> p = new Concept<>(new BitSet(5), new BitSet(5));
+        Concept p = new Concept(new BitSet(5), new BitSet(5));
         assertEquals(p.extent(), bitset("00000"));
         assertEquals(p.intent(), bitset("00000"));
         //Concept<BitSet, BitSet> b = new Concept<BitSet, BitSet>(new BitSet());

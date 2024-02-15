@@ -32,7 +32,7 @@ public class ErisExample {
                   .build();
 
         */
-        context.dual();
+        //context.dual();
         //Context.Iterator<String, String> iterator;
         /*= context.iterator();
         while (iterator.hasNext()) {
