@@ -98,8 +98,8 @@ public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
         this.objects = objects;
         this.attributes = attributes;
         BitSet all = new BitSet();
-        all.set(0, attributes.size());
-        lattice = new Lattice<BitSet, BitSet>(graph, new Concept<BitSet, BitSet>(new BitSet(objects.size()), all));
+        all.set(0, objects.size());
+        lattice = new Lattice<BitSet, BitSet>(graph, new Concept<BitSet, BitSet>(new BitSet(attributes.size()), all));
         this.relation = relation;
         for (int i = 0; i < this.relation.matrix.length; i++) {
             BitSet extent = new BitSet();

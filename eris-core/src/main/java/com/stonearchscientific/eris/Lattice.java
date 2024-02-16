@@ -14,15 +14,13 @@ import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class Lattice<T, U> implements Iterable<Concept<T, U>> {
+public class Lattice<R extends Relatable> implements Iterable<R> {
     private boolean up;
     private Vertex top, bottom;
-    private int size, order, color;
+    private int size, order;
     static final String LABEL = "label";
-    static final String COLOR = "color";
-    static final long NUM_BITS = 64;
 
-    public Lattice(Graph graph, final Concept<T, U> bottom) {
+    public Lattice(Graph graph, final R bottom) {
         checkNotNull(graph);
         up = true;
         order = 0;
@@ -39,11 +37,18 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         return up ? top : bottom;
     }
     public Vertex bottom() { return up ? bottom : top; }
-    public Lattice<T, U> dual() {
+    public Lattice dual() {
         up = up ? false : true;
         return this;
     }
-    public static class Iterator<T, U> implements java.util.Iterator<Concept<T, U>> {
+    public void clear() {
+        top = bottom;
+        size = 0;
+        order = 0;
+    }
+    public int size() { return size; }
+    public int order() { return order; }
+    public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
         private boolean up;
         private Set<Vertex> visited;
         private List<Vertex> queue;
@@ -59,13 +64,13 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
             return !queue.isEmpty();
         }
         @Override
-        public Concept<T, U> next() {
+        public R next() {
             Vertex visiting = queue.remove(0);
-            Concept<T, U> visitingConcept = visiting.getProperty(LABEL);
+            R visitingConcept = visiting.getProperty(LABEL);
 
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
-                Concept<T, U> targetConcept = target.getProperty(LABEL);
+                R targetConcept = target.getProperty(LABEL);
                 boolean proceed = up ? targetConcept.greaterOrEqual(visitingConcept) : targetConcept.lessOrEqual(visitingConcept);
                 if (!visited.contains(target) && proceed) {
                     visited.add(target);
@@ -87,32 +92,33 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
      * Lattice.bottom. This is for consistency when construction happens in a static context outside of a Lattice
      * instance.
      */
-    public Iterator<T, U> iterator() { return new Iterator(bottom(), up); }
-    public Iterator<T, U> iterator(final Concept<T, U> start) {
-        Vertex found = supremum(start, bottom);
-        return new Iterator(found, up);
+    @Override
+    public Iterator<R> iterator() { return new Iterator<>(bottom(), up); }
+    public Iterator<R> iterator(final R from) {
+        Vertex found = supremum(from, bottom);
+        return new Iterator<>(found, up);
     }
     public boolean filter(final Vertex source, final Vertex target) {
-        Concept<T, U> sourceConcept = source.getProperty(LABEL);
-        Concept<T, U> targetConcept = target.getProperty(LABEL);
+        R sourceConcept = source.getProperty(LABEL);
+        R targetConcept = target.getProperty(LABEL);
         return filter(sourceConcept, targetConcept);
     }
 
-    private boolean filter(final Vertex source, final Concept<T, U> right) {
+    private boolean filter(final Vertex source, final R right) {
         if(source.getProperty(LABEL) == null) {
             return false;
         }
 
-        Concept<T, U> sourceConcept = source.getProperty(LABEL);
+        R sourceConcept = source.getProperty(LABEL);
         return filter(sourceConcept, right);
     }
 
-    private boolean filter(final Concept<T, U> left, final Vertex target) {
-        Concept<T, U> targetConcept = target.getProperty(LABEL);
+    private boolean filter(final R left, final Vertex target) {
+        R targetConcept = target.getProperty(LABEL);
         return filter(left, targetConcept);
     }
 
-    private boolean filter(final Concept<T, U> left, final Concept<T, U> right) {
+    private boolean filter(final R left, final R right) {
         //System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
         return right.greaterOrEqual(left);
     }
@@ -136,7 +142,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
     }
     return generator;
 }*/
-    protected final Vertex supremum(final Concept<T, U> proposed, Vertex generator) {
+    protected final Vertex supremum(final R proposed, Vertex generator) {
         boolean max = true;
         while (max) {
             max = false;
@@ -157,9 +163,13 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         }
         return generator;
     }
+    public R find(final R proposed) {
+        Vertex found = supremum(proposed, bottom);
+        return found.getProperty(LABEL);
+    }
 
-    public Vertex insert(final Graph graph, final Concept<T, U> concept) {
-        Vertex added = addIntent(graph, concept, bottom);
+    public Vertex insert(final Graph graph, final R relatable) {
+        Vertex added = addIntent(graph, relatable, bottom);
         // TODO: replace with iteration
         Set<Vertex> visited = new HashSet<>();
         visited.add(added);
@@ -168,8 +178,8 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
 
         while (!queue.isEmpty()) {
             Vertex visiting = queue.remove(0);
-            Concept<T, U> visitingConcept = visiting.getProperty(LABEL);
-            visitingConcept.union(concept);
+            R visitingConcept = visiting.getProperty(LABEL);
+            visitingConcept.union(relatable);
 
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
@@ -181,8 +191,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         } // TODO: end
         return added;
     }
-
-    private Vertex addVertex(final Graph graph, final Concept<T, U> label) {
+    private Vertex addVertex(final Graph graph, final R label) {
         Vertex child = graph.addVertex(null);
         //System.out.println("addVertex(" + label + ")");
         child.setProperty("label", label);
@@ -190,32 +199,31 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         ++size;
         return child;
     }
-
     private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
         //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
-        ++order;
+        order += 2;
         return edge;
     }
-
     private void removeUndirectedEdge(final Graph graph, final Vertex source, final Vertex target) {
         //System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         for (Edge edge : source.getEdges(Direction.BOTH)) {
             if (edge.getVertex(Direction.OUT).equals(target)) {
                 graph.removeEdge(edge);
                 //break;
+                --order;
             }
 
             if (edge.getVertex(Direction.IN).equals(target)) {
                 graph.removeEdge(edge);
+                --order;
                 //break;
             }
-        }
-        --order;
-    }
 
-    public final Vertex addIntent(final Graph graph, final Concept<T, U> proposed, Vertex generator) {
+        }
+    }
+    public final Vertex addIntent(final Graph graph, final R proposed, Vertex generator) {
         //System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
         generator = supremum(proposed, generator);
 
@@ -232,8 +240,8 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
 
             Vertex candidate = target;
             if (!filter(target, proposed) && !filter(proposed, target)) {
-                Concept<T, U> targetElement = target.getProperty(LABEL);
-                Concept<T, U> intersect = (Concept<T, U>) targetElement.intersect(proposed);
+                R targetElement = target.getProperty(LABEL);
+                R intersect = (R) targetElement.intersect(proposed);
                 //System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
                 candidate = addIntent(graph, intersect, candidate);
             }
@@ -262,9 +270,9 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
             }
         }
 
-        Concept<T, U> generatorLabel = generator.getProperty(LABEL);
+        R generatorLabel = generator.getProperty(LABEL);
 
-        Vertex child = addVertex(graph, (Concept<T, U>) proposed.union(generatorLabel));
+        Vertex child = addVertex(graph, (R) proposed.union(generatorLabel));
         addUndirectedEdge(graph, generator, child, "");
 
         top = filter(top, proposed) ? child : top;
@@ -278,6 +286,7 @@ public class Lattice<T, U> implements Iterable<Concept<T, U>> {
         }
         return child;
     }
+
 
 
 }
