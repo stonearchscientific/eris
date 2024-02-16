@@ -1,7 +1,6 @@
 import jpype.imports
 from jpype import JClass
 from context import Context
-import graphviz
 
 eris = './eris-core/target/eris-core-1.0-SNAPSHOT.jar'
 blueprints = './eris-core/external/blueprints-core-2.6.0.jar'
@@ -34,10 +33,4 @@ for item in context.items():
     print(f"encoded intent: {item.intent()}")
     print(f"decoded concept : {context.decode(item)}")
 
-#filename = 'eris-example-context.dot'
-#f = open(filename, 'w', encoding='utf-8')
-#f.write(str(context.graphviz()))
-#f.close()
-
-#g = graphviz.Source.from_file(filename)
-#g.view()
+context.draw()

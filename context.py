@@ -1,5 +1,7 @@
 from jpype import JClass
 from abstract_context import AbstractContext
+
+import graphviz
 class Context(AbstractContext):
     def __init__(self, objects, attributes, relation=None):
         #self.objects = objects
@@ -20,3 +22,10 @@ class Context(AbstractContext):
         decoded_intent = list(self.java_context.decodeAttributes(concept.intent()))
         return [decoded_extent, decoded_intent]
 
+    def draw(self):
+        filename = 'context.dot'
+        f = open(filename, 'w', encoding='utf-8')
+        f.write(str(self.java_context.graphviz()))
+        f.close()
+        g = graphviz.Source.from_file(filename)
+        g.view()

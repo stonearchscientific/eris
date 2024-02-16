@@ -5,17 +5,33 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.BitSet;
 import java.io.File;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
-public class Context<P, Q> extends AbstractContext<Concept> {
+public class Context<P, Q> /*implements Collection<Concept<?, ?>>*/ {
+    private boolean up;
+    private Graph graph;
     private List<P> objects;
     private List<Q> attributes;
+    private Type objectType;
+    private Type attributeType;
     private Matrix relation;
+    private Lattice<BitSet, BitSet> lattice;
+
+    public static enum Type {
+        DATE,
+        INTEGER,
+        DOUBLE,
+        NONCOMPARABLE
+    };
     public List<P> decodeObjects(BitSet bits) {
         List<P> decodedObjects = new ArrayList<>();
         for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
@@ -24,7 +40,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         return decodedObjects;
     }
     /**
-     * Decodes a BitSet into a list of attributes matching membership from left to right.
+     * Decodes a BitSet into a list of attributes matchign membership from left to right.
      *
      * @param bits the BitSet to decode
      * @return a list of attributes with membership indices represented the BitSet
@@ -82,42 +98,58 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         this.objects = objects;
         this.attributes = attributes;
         BitSet all = new BitSet();
-        all.set(0, objects.size());
-        lattice = new Lattice<>(graph, new Concept(new BitSet(attributes.size()), all));
+        all.set(0, attributes.size());
+        lattice = new Lattice<BitSet, BitSet>(graph, new Concept<BitSet, BitSet>(new BitSet(objects.size()), all));
         this.relation = relation;
         for (int i = 0; i < this.relation.matrix.length; i++) {
             BitSet extent = new BitSet();
             extent.flip(i);
-            Concept concept = new Concept(extent, this.relation.matrix[i]);
+            Concept<BitSet, BitSet> concept = new Concept<>(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
     }
-    public boolean contains(Object o) {
-        if (o instanceof Concept) {
-            Concept concept = (Concept) o;
-            return lattice.find(concept).equals(concept);
+    public void dual() { up = up ? false : true; }
+    public static class Iterator<P, Q> implements java.util.Iterator<Concept<BitSet, BitSet>> {
+        private Lattice.Iterator<BitSet, BitSet> iterator;
+        public Iterator(final Lattice.Iterator<BitSet, BitSet> iterator) {
+            this.iterator = iterator;
         }
-        return false;
-    }
-    public boolean containsAll(Collection<?> c) {
-        for (Object o : c) {
-            if (!contains(o)) {
-                return false;
-            }
+        @Override
+        public boolean hasNext() {
+            return iterator.hasNext();
         }
-        return true;
+        @Override
+        public Concept<BitSet, BitSet> next() {
+            return iterator.next();
+        }
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException("remove");
+        }
     }
-
+    public Iterator<P, Q> iterator() {
+        Lattice.Iterator<BitSet, BitSet> iterator;
+        if(up) {
+            iterator = lattice.iterator();
+        } else {
+            iterator = lattice.dual().iterator();
+        }
+        return new Iterator(iterator);
+    }
     public static class Builder<P, Q> {
         private List<P> objects;
         private List<Q> attributes;
+        private Type objectType;
+        private Type attributeType;
         private Matrix relation;
 
-        public Builder<P, Q> withObjects() {
+        public Builder<P, Q> withObjects(Type type) {
+            this.objectType = type;
             return this;
         }
 
-        public Builder<P, Q> withAttributes() {
+        public Builder<P, Q> withAttributes(Type type) {
+            this.attributeType = type;
             return this;
         }
 
@@ -146,7 +178,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
 
              */
 
-            return new Context<>(this.objects, this.attributes, this.relation);
+            return new Context(this.objects, this.attributes, this.relation);
         }
 
     }
@@ -160,13 +192,5 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    @Override
-    public boolean equals(Object o) {
-        if (o instanceof Context) {
-            Context context = (Context) o;
-            return Arrays.equals(this.toArray(), context.toArray());
-        }
-        return false;
     }
 }
