@@ -49,15 +49,15 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     public int size() { return size; }
     public int order() { return order; }
     public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
-        private boolean up;
-        private Set<Vertex> visited;
-        private List<Vertex> queue;
-        public Iterator(final Vertex start, boolean up) {
-            this.up = up;
+        private final Set<Vertex> visited;
+        private final List<Vertex> queue;
+        private final Filter<R> filter;
+        public Iterator(final Vertex start, final Filter<R> filter) {
             visited = new HashSet<>();
             visited.add(start);
             queue = new ArrayList<>();
             queue.add(start);
+            this.filter = filter;
         }
         @Override
         public boolean hasNext() {
@@ -71,17 +71,12 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
                 R targetConcept = target.getProperty(LABEL);
-                boolean proceed = up ? targetConcept.greaterOrEqual(visitingConcept) : targetConcept.lessOrEqual(visitingConcept);
-                if (!visited.contains(target) && proceed) {
+                if (!visited.contains(target) && filter.test(targetConcept, visitingConcept)) {
                     visited.add(target);
                     queue.add(target);
                 }
             }
             return visitingConcept;
-        }
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove");
         }
     }
 
@@ -93,10 +88,14 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
      * instance.
      */
     @Override
-    public Iterator<R> iterator() { return new Iterator<>(bottom(), up); }
+    public Iterator<R> iterator() { return new Iterator<>(bottom(), new DefaultFilter<>(up)); }
     public Iterator<R> iterator(final R from) {
         Vertex found = supremum(from, bottom);
-        return new Iterator<>(found, up);
+        return new Iterator<>(found, new DefaultFilter<>(up));
+    }
+    public Iterator<R> iterator(final R from, final Filter<R> filter) {
+        Vertex found = supremum(from, bottom);
+        return new Iterator<>(found, filter);
     }
     public boolean filter(final Vertex source, final Vertex target) {
         R sourceConcept = source.getProperty(LABEL);

@@ -82,16 +82,18 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         this.objects = objects;
         this.attributes = attributes;
         BitSet all = new BitSet();
-        all.set(0, objects.size());
-        lattice = new Lattice<>(graph, new Concept(new BitSet(attributes.size()), all));
+        all.set(0, attributes.size());
+        lattice = new Lattice<>(graph, new Concept(new BitSet(objects.size()), all));
         this.relation = relation;
         for (int i = 0; i < this.relation.matrix.length; i++) {
+
             BitSet extent = new BitSet();
             extent.flip(i);
             Concept concept = new Concept(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
     }
+    @Override
     public boolean contains(Object o) {
         if (o instanceof Concept) {
             Concept concept = (Concept) o;
@@ -99,6 +101,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         }
         return false;
     }
+    @Override
     public boolean containsAll(Collection<?> c) {
         for (Object o : c) {
             if (!contains(o)) {
@@ -107,50 +110,6 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         }
         return true;
     }
-
-    public static class Builder<P, Q> {
-        private List<P> objects;
-        private List<Q> attributes;
-        private Matrix relation;
-
-        public Builder<P, Q> withObjects() {
-            return this;
-        }
-
-        public Builder<P, Q> withAttributes() {
-            return this;
-        }
-
-        public Builder<P, Q> withObjects(List<P> objects) {
-            this.objects = objects;
-            return this;
-        }
-
-        public Builder<P, Q> withAttributes(List<Q> attributes) {
-            this.attributes = attributes;
-            return this;
-        }
-
-        public Builder<P, Q> withRelation(final Matrix relation) {
-            this.relation = relation;
-            return this;
-        }
-        public Context<P, Q> build() {
-            /*
-            Context<P, Q> context = new Context<>();
-            context.objects = this.objects;
-            context.attributes = this.attributes;
-            context.objectType = this.objectType;
-            context.attributeType = this.attributeType;
-            context.relation = this.relation;
-
-             */
-
-            return new Context<>(this.objects, this.attributes, this.relation);
-        }
-
-    }
-
     public void draw(final String filename) {
         String graphvizOutput = this.graphviz();
 
@@ -163,8 +122,8 @@ public class Context<P, Q> extends AbstractContext<Concept> {
     }
     @Override
     public boolean equals(Object o) {
-        if (o instanceof Context) {
-            Context context = (Context) o;
+        if (o instanceof Context<? ,?>) {
+            Context<?, ?> context = (Context<?, ?>) o;
             return Arrays.equals(this.toArray(), context.toArray());
         }
         return false;

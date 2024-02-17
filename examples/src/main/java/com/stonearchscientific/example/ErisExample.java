@@ -22,8 +22,8 @@ public class ErisExample {
 
         Matrix relation = new Matrix(example);
 
-        context = new Context(new ArrayList<String>(Arrays.asList("1", "2", "3", "4", "5")),
-                  new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e")), relation);
+        context = new Context(new ArrayList<String>(Arrays.asList("1", "2", "3", "4", "5", "6", "7")),
+                  new ArrayList<String>(Arrays.asList("a", "b", "c", "d", "e", "f", "g", "h", "i", "j")), relation);
         /*
         Context.Builder<String, String> builder = new Context.Builder<>();
         context = builder.withObjects(Arrays.asList("1", "2", "3", "4", "5"))
@@ -33,12 +33,11 @@ public class ErisExample {
 
         */
         //context.dual();
-        //Context.Iterator<String, String> iterator;
-        /*= context.iterator();
+        Context.Iterator<String, String> iterator;
         while (iterator.hasNext()) {
             System.out.println("Context:Concept = " + iterator.next());
         }
 
-        */
+
     }
 }
