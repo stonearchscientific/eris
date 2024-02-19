@@ -47,6 +47,12 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot union Domain and " + that.getClass().getName() + ".");
         }
+        if(that.extent == null) { // TODO: try that == none()
+            return this;
+        }
+        if(this.extent == null) { // TODO: try this == none()
+            return that;
+        }
         RangeSet<C> rangeSet = TreeRangeSet.create();
         rangeSet.add(this.extent);
         rangeSet.add(that.extent);

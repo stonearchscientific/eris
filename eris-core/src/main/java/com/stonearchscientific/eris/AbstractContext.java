@@ -1,6 +1,7 @@
 package com.stonearchscientific.eris;
 
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +13,10 @@ public abstract class AbstractContext<R extends Relatable<R>> implements Collect
     protected boolean up;
     protected Graph graph;
     protected Lattice<R> lattice;
+    public AbstractContext() {
+        this.up = true;
+        this.graph = new TinkerGraph();
+    }
     public AbstractContext<R> dual() {
         up = !up;
         return this;

@@ -1,22 +1,22 @@
 package com.stonearchscientific.eris;
 
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Collection;
-
-import java.util.HashSet;
-import java.util.Set;
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
+import com.tinkerpop.blueprints.Edge;
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
 public class Lattice<R extends Relatable> implements Iterable<R> {
     private boolean up;
-    private Vertex top, bottom;
+    private Vertex top;
+    private final Vertex bottom;
     private int size, order;
     static final String LABEL = "label";
 
@@ -38,12 +38,12 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     }
     public Vertex bottom() { return up ? bottom : top; }
     public Lattice dual() {
-        up = up ? false : true;
+        up = !up;
         return this;
     }
     public void clear() {
         top = bottom;
-        size = 0;
+        size = 1;
         order = 0;
     }
     public int size() { return size; }
@@ -118,7 +118,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     }
 
     private boolean filter(final R left, final R right) {
-        //System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
+        System.out.println(right + " >=  " + left + " : " + (right.greaterOrEqual(left) ? "true" : "false"));
         return right.greaterOrEqual(left);
     }
     /*
@@ -147,7 +147,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             max = false;
             for (Edge edge : generator.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
-                //System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
+                System.out.println("supremum(" + proposed + ", " + generator.getProperty(LABEL) + ") : " + target.getProperty(LABEL));
                 if (filter(target, generator)) {
                     continue;
                 }
@@ -169,6 +169,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
 
     public Vertex insert(final Graph graph, final R relatable) {
         Vertex added = addIntent(graph, relatable, bottom);
+        System.out.println("ADDED INTENT");
         // TODO: replace with iteration
         Set<Vertex> visited = new HashSet<>();
         visited.add(added);
@@ -178,7 +179,9 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         while (!queue.isEmpty()) {
             Vertex visiting = queue.remove(0);
             R visitingConcept = visiting.getProperty(LABEL);
+            System.out.println("UNION");
             visitingConcept.union(relatable);
+            System.out.println("DONE");
 
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
@@ -192,21 +195,20 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     }
     private Vertex addVertex(final Graph graph, final R label) {
         Vertex child = graph.addVertex(null);
-        //System.out.println("addVertex(" + label + ")");
+        System.out.println("addVertex(" + label + ")");
         child.setProperty("label", label);
-        //child.setProperty("color", color);
         ++size;
         return child;
     }
     private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
-        //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
         order += 2;
         return edge;
     }
     private void removeUndirectedEdge(final Graph graph, final Vertex source, final Vertex target) {
-        //System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
+        System.out.println("removeUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         for (Edge edge : source.getEdges(Direction.BOTH)) {
             if (edge.getVertex(Direction.OUT).equals(target)) {
                 graph.removeEdge(edge);
@@ -223,7 +225,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         }
     }
     public final Vertex addIntent(final Graph graph, final R proposed, Vertex generator) {
-        //System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
+        System.out.println("addIntent(" + proposed + ", " + generator.getProperty(LABEL) + ")");
         generator = supremum(proposed, generator);
 
         if (filter(generator, proposed) && filter(proposed, generator)) {
@@ -241,7 +243,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             if (!filter(target, proposed) && !filter(proposed, target)) {
                 R targetElement = target.getProperty(LABEL);
                 R intersect = (R) targetElement.intersect(proposed);
-                //System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
+                System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
                 candidate = addIntent(graph, intersect, candidate);
             }
 

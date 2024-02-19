@@ -1,20 +1,18 @@
 package com.stonearchscientific.eris;
 
-import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.Direction;
-import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
-
-import java.util.*;
-import java.io.File;
 import guru.nidi.graphviz.engine.Format;
 import guru.nidi.graphviz.engine.Graphviz;
 import guru.nidi.graphviz.model.MutableGraph;
 import guru.nidi.graphviz.parse.Parser;
+
+import java.io.File;
+import java.util.*;
 public class Context<P, Q> extends AbstractContext<Concept> {
-    private List<P> objects;
-    private List<Q> attributes;
+    private final List<P> objects;
+    private final List<Q> attributes;
     private Matrix relation;
     public List<P> decodeObjects(BitSet bits) {
         List<P> decodedObjects = new ArrayList<>();
@@ -77,8 +75,6 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         return sb.toString();
     }
     public Context(List<P> objects, List<Q> attributes, Matrix relation) {
-        up = true;
-        graph = new TinkerGraph();
         this.objects = objects;
         this.attributes = attributes;
         BitSet all = new BitSet();
