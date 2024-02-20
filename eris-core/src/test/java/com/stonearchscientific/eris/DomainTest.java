@@ -57,6 +57,11 @@ public final class DomainTest {
         assertFalse(d.greaterOrEqual(b));
     }
     @Test
+    public void testIntersect() {
+        System.out.println("none intersect b: " + z.intersect(b));
+        System.out.println("b intersect none: " + b.intersect(z));
+    }
+    @Test
     public void testEquals() {
         assertEquals(Domain.all(), Domain.all());
         assertEquals(Domain.none(), Domain.none());

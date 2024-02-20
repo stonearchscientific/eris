@@ -50,6 +50,7 @@ public class ContextTest {
         context2.add(new Concept(bitset("01000"), bitset("10000")));
         context2.add(new Concept(bitset("10000"), bitset("01111")));
         context2.draw("testAdd.png");
+        assertEquals(context2, context);
     }
     @Test
     public void testIterator() {
