@@ -7,7 +7,7 @@ public class DefaultFilter<R extends Relatable> extends Filter<R> {
         super(up);
     }
     @Override
-    public boolean test(R left, R right) {
+    public boolean test(final R left, final R right) {
         checkNotNull(left);
         checkNotNull(right);
         return up ? left.greaterOrEqual(right) : left.lessOrEqual(right);
