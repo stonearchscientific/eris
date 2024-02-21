@@ -14,7 +14,6 @@ public class Context<P, Q> extends AbstractContext<Concept> {
     private final List<P> objects;
     private final List<Q> attributes;
     private Matrix relation;
-    private Lattice<BitSet, BitSet> lattice;
 
     public static enum Type {
         DATE,
@@ -93,7 +92,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
 
             BitSet extent = new BitSet();
             extent.flip(i);
-            Concept<BitSet, BitSet> concept = new Concept<>(extent, this.relation.matrix[i]);
+            Concept concept = new Concept(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
     }
@@ -113,6 +112,8 @@ public class Context<P, Q> extends AbstractContext<Concept> {
             if (!contains(o)) {
                 return false;
             }
+
+        }
         return true;
     }
 
