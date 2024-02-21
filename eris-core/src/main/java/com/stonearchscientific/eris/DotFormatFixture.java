@@ -6,17 +6,20 @@ import com.tinkerpop.blueprints.Vertex;
 public class DotFormatFixture<R extends Relatable> extends FormatFixture<R> {
     public DotFormatFixture() {
         super();
+        sb.append("digraph {\n");
     }
     @Override
     public boolean apply(final Vertex target, final Vertex source, final Edge edge) {
-        R sourceElement = source.getProperty(Lattice.LABEL);
-        R targetElement = target.getProperty(Lattice.LABEL);
-        if (!sourceElement.equals(targetElement)) {
-            if (!filter.test(targetElement, sourceElement)) {
+        R sourceLabel = source.getProperty(Lattice.LABEL);
+        R targetLabel = target.getProperty(Lattice.LABEL);
+        System.out.println("sourceLabel: " + sourceLabel);
+        System.out.println("targetLabel: " + targetLabel);
+        if (!sourceLabel.equals(targetLabel)) {
+            if (filter.test(targetLabel, sourceLabel)) {
                 sb.append(" \"")
-                        .append(sourceElement)
+                        .append(sourceLabel)
                         .append("\" -> \"")
-                        .append(targetElement)
+                        .append(targetLabel)
                         .append("\"[label=\"")
                         .append(edge.getLabel())
                         .append("\"]\n");
@@ -26,5 +29,6 @@ public class DotFormatFixture<R extends Relatable> extends FormatFixture<R> {
     }
     @Override
     public void finish() {
+        sb.append("}");
     }
 }

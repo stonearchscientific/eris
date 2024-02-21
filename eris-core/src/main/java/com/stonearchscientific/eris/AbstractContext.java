@@ -1,6 +1,7 @@
 package com.stonearchscientific.eris;
 
 import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 
 import java.util.ArrayList;
@@ -79,6 +80,10 @@ public abstract class AbstractContext<R extends Relatable<R>> implements Collect
         } else {
             iterator = lattice.dual().iterator();
         }
+        return new Iterator<>(iterator);
+    }
+    public Iterator<R> iterator(final R from, final Fixture<R> fixture) {
+        Lattice.Iterator<R> iterator = lattice.iterator(from, fixture);
         return new Iterator<>(iterator);
     }
     @Override

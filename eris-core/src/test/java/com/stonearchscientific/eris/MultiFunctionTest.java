@@ -27,7 +27,9 @@ public class MultiFunctionTest {
         //rangeSet.add(Range.closed(1, 2));
         //rangeSet.add(Range.closed(3, 4));
         //System.out.println("SPAN: " + rangeSet.span());
-        mf.draw("domain_test_add.png");
+        mf.draw("domain_test_add_new.png");
 
     }
+
+
 }

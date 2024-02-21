@@ -76,11 +76,11 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
     }
 
     public boolean greaterOrEqual(final Domain<C, D> that) {
-        System.out.println("GOT TO INSTANCE OF CHECK");
+        //System.out.println("GOT TO INSTANCE OF CHECK");
         if (!(that instanceof Domain)) {
             throw new IllegalArgumentException("Cannot compare Domain and " + that.getClass().getName() + ".");
         }
-        System.out.println("GOT PAST instanceof check");
+        //System.out.println("GOT PAST instanceof check");
         if(this.intent == null) { // this == ALL
             return true;
         }
