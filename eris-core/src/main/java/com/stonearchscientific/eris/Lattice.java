@@ -51,13 +51,13 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
         private final Set<Vertex> visited;
         private final List<Vertex> queue;
-        private final Filter<R> filter;
-        public Iterator(final Vertex start, final Filter<R> filter) {
+        private final Fixture<R> fixture;
+        public Iterator(final Vertex start, final Fixture<R> fixture) {
             visited = new HashSet<>();
             visited.add(start);
             queue = new ArrayList<>();
             queue.add(start);
-            this.filter = filter;
+            this.fixture = fixture;
         }
         @Override
         public boolean hasNext() {
@@ -71,7 +71,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
                 R targetConcept = target.getProperty(LABEL);
-                if (!visited.contains(target) && filter.test(targetConcept, visitingConcept)) {
+                if (!visited.contains(target) && fixture.apply(target, visiting)) {
                     visited.add(target);
                     queue.add(target);
                 }
@@ -88,14 +88,14 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
      * instance.
      */
     @Override
-    public Iterator<R> iterator() { return new Iterator<>(bottom(), new DefaultFilter<>(up)); }
+    public Iterator<R> iterator() { return new Iterator<>(bottom(), new DefaultFixture<>(new DefaultFilter<>(up))); }
     public Iterator<R> iterator(final R from) {
         Vertex found = supremum(from, bottom);
-        return new Iterator<>(found, new DefaultFilter<>(up));
+        return new Iterator<>(found, new DefaultFixture<>(new DefaultFilter<>(up)));
     }
-    public Iterator<R> iterator(final R from, final Filter<R> filter) {
+    public Iterator<R> iterator(final R from, final Fixture<R> fixture) {
         Vertex found = supremum(from, bottom);
-        return new Iterator<>(found, filter);
+        return new Iterator<>(found, fixture);
     }
     public boolean filter(final Vertex source, final Vertex target) {
         R sourceConcept = source.getProperty(LABEL);

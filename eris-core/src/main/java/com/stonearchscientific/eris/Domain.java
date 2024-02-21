@@ -51,7 +51,8 @@ public final class Domain<C extends Comparable, D extends Comparable> extends Ab
             return this;
         }
         if(this.extent == null) { // TODO: try this == none()
-            return that;
+            this.extent = that.extent;
+            return this;
         }
         RangeSet<C> rangeSet = TreeRangeSet.create();
         rangeSet.add(this.extent);
