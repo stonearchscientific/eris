@@ -14,6 +14,14 @@ public class Context<P, Q> extends AbstractContext<Concept> {
     private final List<P> objects;
     private final List<Q> attributes;
     private Matrix relation;
+    private Lattice<BitSet, BitSet> lattice;
+
+    public static enum Type {
+        DATE,
+        INTEGER,
+        DOUBLE,
+        NONCOMPARABLE
+    };
     public List<P> decodeObjects(BitSet bits) {
         List<P> decodedObjects = new ArrayList<>();
         for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
@@ -22,7 +30,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         return decodedObjects;
     }
     /**
-     * Decodes a BitSet into a list of attributes matching membership from left to right.
+     * Decodes a BitSet into a list of attributes matchign membership from left to right.
      *
      * @param bits the BitSet to decode
      * @return a list of attributes with membership indices represented the BitSet
@@ -85,10 +93,11 @@ public class Context<P, Q> extends AbstractContext<Concept> {
 
             BitSet extent = new BitSet();
             extent.flip(i);
-            Concept concept = new Concept(extent, this.relation.matrix[i]);
+            Concept<BitSet, BitSet> concept = new Concept<>(extent, this.relation.matrix[i]);
             lattice.insert(graph, concept);
         }
     }
+
     @Override
     public boolean contains(Object o) {
         if (o instanceof Concept) {
@@ -97,15 +106,16 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         }
         return false;
     }
+
     @Override
     public boolean containsAll(Collection<?> c) {
         for (Object o : c) {
             if (!contains(o)) {
                 return false;
             }
-        }
         return true;
     }
+
     public void draw(final String filename) {
         String graphvizOutput = this.graphviz();
 
