@@ -12,7 +12,6 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
 public class Lattice<R extends Relatable> implements Iterable<R> {
     private boolean up;
     private Vertex top;
@@ -61,7 +60,11 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         }
         @Override
         public boolean hasNext() {
-            return !queue.isEmpty();
+            if(queue.isEmpty()) {
+                fixture.finish();
+                return false;
+            }
+            return true;
         }
         @Override
         public R next() {
@@ -71,7 +74,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
                 R targetConcept = target.getProperty(LABEL);
-                if (!visited.contains(target) && fixture.apply(target, visiting)) {
+                if (!visited.contains(target) && fixture.apply(target, visiting, edge)) {
                     visited.add(target);
                     queue.add(target);
                 }
@@ -287,7 +290,4 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         }
         return child;
     }
-
-
-
 }
