@@ -7,5 +7,5 @@ public abstract class Fixture<R extends Relatable>  {
     public Fixture(final Filter<R> filter) {
         this.filter = filter;
     }
-    public abstract boolean apply(Vertex source, Vertex target);
+    public abstract boolean apply(Vertex target, Vertex source);
 }

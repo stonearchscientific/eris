@@ -12,9 +12,9 @@ public class DefaultFixture<R extends Relatable> extends Fixture<R> {
         super(filter);
     }
     @Override
-    public boolean apply(final Vertex source, final Vertex target) {
-        checkNotNull(source);
+    public boolean apply(final Vertex target, final Vertex source) {
         checkNotNull(target);
-        return filter.test((R) source.getProperty(Lattice.LABEL), (R) target.getProperty(Lattice.LABEL));
+        checkNotNull(source);
+        return filter.test((R) target.getProperty(Lattice.LABEL), (R) source.getProperty(Lattice.LABEL));
     }
 }
