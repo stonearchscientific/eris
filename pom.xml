@@ -8,6 +8,5 @@
 
     <modules>
         <module>eris-core</module>
-        <module>examples</module>
     </modules>
 </project>
