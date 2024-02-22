@@ -5,14 +5,11 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Graph;
 import com.tinkerpop.blueprints.Vertex;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Lattice<R extends Relatable> implements Iterable<R> {
+public class Lattice<R extends Relatable<R>> implements Iterable<R> {
     private boolean up;
     private Vertex top;
     private final Vertex bottom;
@@ -36,7 +33,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
         return up ? top : bottom;
     }
     public Vertex bottom() { return up ? bottom : top; }
-    public Lattice dual() {
+    public Lattice<R> dual() {
         up = !up;
         return this;
     }
@@ -47,7 +44,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
     }
     public int size() { return size; }
     public int order() { return order; }
-    public static class Iterator<R extends Relatable> implements java.util.Iterator<R> {
+    public static class Iterator<R extends Relatable<R>> implements java.util.Iterator<R> {
         private final Set<Vertex> visited;
         private final List<Vertex> queue;
         private final Fixture<R> fixture;
@@ -73,7 +70,6 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
 
             for (Edge edge : visiting.getEdges(Direction.BOTH)) {
                 Vertex target = edge.getVertex(Direction.OUT);
-                R targetConcept = target.getProperty(LABEL);
                 if (fixture.apply(target, visiting, edge) && !visited.contains(target)) {
                     visited.add(target);
                     queue.add(target);
@@ -235,7 +231,7 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             return generator;
         }
 
-        List parents = new ArrayList<>();
+        List<Vertex> parents = new ArrayList<>();
         for (Edge edge : generator.getEdges(Direction.BOTH)) {
             Vertex target = edge.getVertex(Direction.OUT);
             if (filter(target, generator)) {
@@ -251,21 +247,18 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
             }
 
             boolean add = true;
-            List doomed = new ArrayList<>();
-            for (java.util.Iterator it = parents.iterator(); it.hasNext();) {
-                Vertex parent = (Vertex) it.next();
+            List<Vertex> doomed = new ArrayList<>();
+            for (Vertex parent : parents) {
 
                 if (filter(parent, candidate)) {
                     add = false;
                     break;
-                }
-                else if (filter(candidate, parent)) {
+                } else if (filter(candidate, parent)) {
                     doomed.add(parent);
                 }
             }
 
-            for (java.util.Iterator it = doomed.iterator(); it.hasNext();) {
-                Vertex vertex = (Vertex) it.next();
+            for (Vertex vertex : doomed) {
                 parents.remove(vertex);
             }
 
@@ -276,13 +269,12 @@ public class Lattice<R extends Relatable> implements Iterable<R> {
 
         R generatorLabel = generator.getProperty(LABEL);
 
-        Vertex child = addVertex(graph, (R) proposed.union(generatorLabel));
+        Vertex child = addVertex(graph, proposed.union(generatorLabel));
         addUndirectedEdge(graph, generator, child, "");
 
         top = filter(top, proposed) ? child : top;
 
-        for (java.util.Iterator it = parents.iterator(); it.hasNext();) {
-            Vertex parent = (Vertex) it.next();
+        for (Vertex parent : parents) {
             if (!parent.equals(generator)) {
                 removeUndirectedEdge(graph, parent, generator);
                 addUndirectedEdge(graph, parent, child, "");

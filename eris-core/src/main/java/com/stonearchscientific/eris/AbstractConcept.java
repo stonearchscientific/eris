@@ -1,7 +1,6 @@
 package com.stonearchscientific.eris;
 
-import java.util.Objects;
-public abstract class AbstractConcept<T, U, R extends AbstractConcept> implements Relatable<R> {
+public abstract class AbstractConcept<T, U, R extends AbstractConcept<T, U, R>> implements Relatable<R> {
     protected T extent;
     protected U intent;
     public AbstractConcept(T extent, U intent) {
@@ -14,15 +13,6 @@ public abstract class AbstractConcept<T, U, R extends AbstractConcept> implement
     public U intent() {
         return this.intent;
     }
-
-    /*
-    public boolean greaterOrEqual(Relatable that) {
-        if (!(that instanceof AbstractConcept)) {
-            throw new IllegalArgumentException("Cannot compare " + this.getClass().getName() + " and " + that.getClass().getName() + ".");
-        }
-    }
-
-     */
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

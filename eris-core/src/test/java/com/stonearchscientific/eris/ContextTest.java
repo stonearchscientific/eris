@@ -50,6 +50,8 @@ public class ContextTest {
         context2.add(new Concept(bitset("01000"), bitset("10000")));
         context2.add(new Concept(bitset("10000"), bitset("01111")));
         context2.draw("testAdd.png");
+        assertEquals(context2.size(), 8);
+        assertEquals(context2.order(), 20);
         assertEquals(context2, context);
     }
     @Test
@@ -69,7 +71,7 @@ public class ContextTest {
         }
         assertEquals(count, 8);
         assertEquals(last, new Concept(bitset("11111"), bitset("00000")));
-
+        // Test iteration in the other direction (dual)
         iterator = context.dual().iterator();
         count = 1;
         last = null;

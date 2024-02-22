@@ -1,7 +1,6 @@
 package com.stonearchscientific.eris;
 
 import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Vertex;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 
 import java.util.ArrayList;
@@ -66,10 +65,6 @@ public abstract class AbstractContext<R extends Relatable<R>> implements Collect
         @Override
         public R next() {
             return iterator.next();
-        }
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("remove");
         }
     }
     @Override
