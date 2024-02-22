@@ -19,32 +19,19 @@ import java.util.BitSet;
  * Davey, BA, &amp; Priestley, HA (2002). Introduction to Lattices and Order (2nd ed.). Cambridge University Press<br>
  */
 public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
-
-
-    private BitSet bitset(String bitstring) {
-        return BitSet.valueOf(new long[]{Long.parseLong(bitstring, 2)});
-    }
-
-    private Concept() {
-        super(null, null);
-    }
-
+    public static final int DEFAULT_SIZE = 64;
     public Concept(BitSet extent, BitSet intent) {
         super(extent, intent);
     }
-
-    public static Concept none(Class clazz) {
-        if (clazz == BitSet.class) {
-            return new Concept(new BitSet(), null);
-        }
-        return new Concept(null, null);
+    public static Concept none() {
+        return none(DEFAULT_SIZE);
     }
-
-
+    public static Concept none(int size) {
+        BitSet all = new BitSet();
+        all.set(0, size);
+        return new Concept(new BitSet(size), all);
+    }
     public Concept intersect(Concept that) {
-        if (!(that instanceof Concept)) {
-            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
-        }
         if(that.intent == null) {
             return that;
         }
@@ -54,14 +41,12 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
         meet.and(thatIntent);
         return new Concept(new BitSet(), meet);
     }
-
-    public Concept union(Concept that) {
+    public Concept union(Concept that) { // TODO: Replace this with UnionizeFixture
         if (!(that instanceof Concept)) {
             throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
         }
-        BitSet thisExtent = (BitSet) this.extent;
-        BitSet thatExtent = (BitSet) that.extent;
-        BitSet join = (BitSet) thisExtent.clone();
+        BitSet thisExtent = this.extent;
+        BitSet thatExtent = that.extent;
         thisExtent.or(thatExtent);
         return this;
     }
@@ -75,17 +60,14 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
      * @see Concept#greaterOrEqual(Concept)
      */
     public boolean lessOrEqual(Concept that) {
-        if (!(that instanceof Concept)) {
-            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
-        }
         if(this.intent == null) {
             return false;
         }
         if(that.intent == null) {
             return true;
         }
-        BitSet thisIntent = (BitSet) this.intent;
-        BitSet thatIntent = (BitSet) that.intent;
+        BitSet thisIntent = this.intent;
+        BitSet thatIntent = that.intent;
         BitSet join = (BitSet) thisIntent.clone();
         join.or(thatIntent);
         return join.cardinality() == thisIntent.cardinality();
@@ -100,23 +82,19 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
      * @see Concept#lessOrEqual(Concept)
      */
     public boolean greaterOrEqual(Concept that) {
-        if (!(that instanceof Concept)) {
-            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
-        }
         if(this.intent == null) {
             return true;
         }
         if(that.intent == null) {
             return false;
         }
-        BitSet thisIntent = (BitSet) this.intent;
-        BitSet thatIntent = (BitSet) that.intent;
+        BitSet thisIntent = this.intent;
+        BitSet thatIntent = that.intent;
         BitSet meet = (BitSet) thatIntent.clone();
         meet.and(thisIntent);
             // System.out.println(thisIntent + " and " + thatIntent + " = " + meet);
         return meet.cardinality() == thisIntent.cardinality();
     }
-
     @Override
     public boolean equals(final Object that) {
         if (!(that instanceof Concept)) {
@@ -126,13 +104,13 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
             return true;
         }
         Concept concept = (Concept) that;
-        Class<?> clazz = concept.extent.getClass();
-        if (this == Concept.none(clazz) && that == Concept.none(clazz)) {
-            return true;
-        }
-        return java.util.Objects.equals(concept.extent, this.extent) && java.util.Objects.equals(concept.intent, this.intent);
+        //Class<?> clazz = concept.extent.getClass();
+        //if (this.equals(Concept.none()) && that.equals(Concept.none())) {
+        //    return true;
+       // }
+        return java.util.Objects.equals(concept.extent, this.extent) &&
+                java.util.Objects.equals(concept.intent, this.intent);
     }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

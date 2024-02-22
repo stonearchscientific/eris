@@ -61,8 +61,8 @@ public final class ConceptTest {
     @Test
     public void testEqual() {
         assertTrue(x.equals(x));
-        //assertTrue(Concept.none(BitSet.class).equals(Concept.none(BitSet.class)));
-        assertFalse(x.equals(Concept.none(BitSet.class)));
+        assertTrue(Concept.none().equals(Concept.none()));
+        assertFalse(x.equals(Concept.none()));
         assertFalse(x.equals(y));
         assertFalse(x.equals(z));
         assertFalse(x.equals(null));
