@@ -13,14 +13,7 @@ import java.util.*;
 public class Context<P, Q> extends AbstractContext<Concept> {
     private final List<P> objects;
     private final List<Q> attributes;
-    private Matrix relation;
-
-    public static enum Type {
-        DATE,
-        INTEGER,
-        DOUBLE,
-        NONCOMPARABLE
-    };
+    private final Matrix relation;
     public List<P> decodeObjects(BitSet bits) {
         List<P> decodedObjects = new ArrayList<>();
         for (int i = bits.nextSetBit(0); i >= 0; i = bits.nextSetBit(i+1)) {
@@ -41,6 +34,7 @@ public class Context<P, Q> extends AbstractContext<Concept> {
         }
         return decodedAttributes;
     }
+    public Matrix relation() { return relation; }
     public String graphviz() {
         StringBuilder sb = new StringBuilder("digraph {\n");
 
@@ -57,11 +51,11 @@ public class Context<P, Q> extends AbstractContext<Concept> {
                     if (!targetElement.greaterOrEqual(sourceElement)) {
                         if (!objects.isEmpty() && !attributes.isEmpty()) {
                             sb.append(" \"")
-                                    .append(decodeObjects((BitSet) sourceElement.extent()))
-                                    .append(decodeAttributes((BitSet) sourceElement.intent()))
+                                    .append(decodeObjects(sourceElement.extent()))
+                                    .append(decodeAttributes(sourceElement.intent()))
                                     .append("\" -> \"")
-                                    .append(decodeObjects((BitSet) targetElement.extent()))
-                                    .append(decodeAttributes((BitSet) targetElement.intent()))
+                                    .append(decodeObjects(targetElement.extent()))
+                                    .append(decodeAttributes(targetElement.intent()))
                                     .append("\"[label=\"")
                                     .append(edge.getLabel())
                                     .append("\"]\n");

@@ -87,10 +87,12 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
      * instance.
      */
     @Override
-    public Iterator<R> iterator() { return new Iterator<>(bottom(), new DefaultFixture<>(new DefaultFilter<>(up))); }
+    public Iterator<R> iterator() {
+        return new Iterator<>(bottom(), new DefaultFixture<R>(new DefaultFilter<>(up)));
+    }
     public Iterator<R> iterator(final R from) {
         Vertex found = supremum(from, bottom);
-        return new Iterator<>(found, new DefaultFixture<>(new DefaultFilter<>(up)));
+        return new Iterator<>(found, new DefaultFixture<R>(new DefaultFilter<>(up)));
     }
     public Iterator<R> iterator(final R from, final Fixture<R> fixture) {
         Vertex found = supremum(from, bottom);
@@ -241,7 +243,7 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
             Vertex candidate = target;
             if (!filter(target, proposed) && !filter(proposed, target)) {
                 R targetElement = target.getProperty(LABEL);
-                R intersect = (R) targetElement.intersect(proposed);
+                R intersect = targetElement.intersect(proposed);
                 //System.out.println(targetElement + " intersect " + proposed + " = " + intersect);
                 candidate = addIntent(graph, intersect, candidate);
             }

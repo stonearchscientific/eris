@@ -3,7 +3,7 @@ package com.stonearchscientific.eris;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
-public class DotFormatFixture<R extends Relatable> extends FormatFixture<R> {
+public class DotFormatFixture<R extends Relatable<R>> extends FormatFixture<R> {
     public DotFormatFixture() {
         super();
         sb.append("digraph {\n");

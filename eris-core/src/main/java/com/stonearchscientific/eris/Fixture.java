@@ -3,7 +3,7 @@ package com.stonearchscientific.eris;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
-public abstract class Fixture<R extends Relatable>  {
+public abstract class Fixture<R extends Relatable<R>>  {
     protected Filter<R> filter;
     public Fixture(final Filter<R> filter) {
         this.filter = filter;

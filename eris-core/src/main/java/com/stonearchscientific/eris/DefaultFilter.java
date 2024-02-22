@@ -2,7 +2,7 @@ package com.stonearchscientific.eris;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DefaultFilter<R extends Relatable> extends Filter<R> {
+public class DefaultFilter<R extends Relatable<R>> extends Filter<R> {
     public DefaultFilter(final boolean up) {
         super(up);
     }
