@@ -19,26 +19,46 @@ import java.util.BitSet;
  * Davey, BA, &amp; Priestley, HA (2002). Introduction to Lattices and Order (2nd ed.). Cambridge University Press<br>
  */
 public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
+
+
+    private BitSet bitset(String bitstring) {
+        return BitSet.valueOf(new long[]{Long.parseLong(bitstring, 2)});
+    }
+
+    private Concept() {
+        super(null, null);
+    }
+
     public Concept(BitSet extent, BitSet intent) {
         super(extent, intent);
     }
+
     public static Concept none(Class clazz) {
         if (clazz == BitSet.class) {
             return new Concept(new BitSet(), null);
         }
         return new Concept(null, null);
     }
+
+
     public Concept intersect(Concept that) {
+        if (!(that instanceof Concept)) {
+            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
+        }
         if(that.intent == null) {
             return that;
         }
-        BitSet thisIntent = this.intent;
-        BitSet thatIntent = that.intent;
+        BitSet thisIntent = (BitSet) this.intent;
+        BitSet thatIntent = (BitSet) that.intent;
         BitSet meet = (BitSet) thisIntent.clone();
         meet.and(thatIntent);
         return new Concept(new BitSet(), meet);
     }
+
     public Concept union(Concept that) {
+        if (!(that instanceof Concept)) {
+            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
+        }
         BitSet thisExtent = (BitSet) this.extent;
         BitSet thatExtent = (BitSet) that.extent;
         BitSet join = (BitSet) thisExtent.clone();
@@ -55,6 +75,9 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
      * @see Concept#greaterOrEqual(Concept)
      */
     public boolean lessOrEqual(Concept that) {
+        if (!(that instanceof Concept)) {
+            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
+        }
         if(this.intent == null) {
             return false;
         }
@@ -77,6 +100,9 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
      * @see Concept#lessOrEqual(Concept)
      */
     public boolean greaterOrEqual(Concept that) {
+        if (!(that instanceof Concept)) {
+            throw new IllegalArgumentException("Both intent and extent must be instances of Range for intersection.");
+        }
         if(this.intent == null) {
             return true;
         }
@@ -93,6 +119,9 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
 
     @Override
     public boolean equals(final Object that) {
+        if (!(that instanceof Concept)) {
+            return false;
+        }
         if (that == this) {
             return true;
         }
@@ -103,6 +132,7 @@ public class Concept extends AbstractConcept<BitSet, BitSet, Concept> {
         }
         return java.util.Objects.equals(concept.extent, this.extent) && java.util.Objects.equals(concept.intent, this.intent);
     }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
