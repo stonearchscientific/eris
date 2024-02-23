@@ -6,13 +6,14 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 
 import java.util.BitSet;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 public class ConceptLatticeTest {
     private Graph graph;
@@ -37,7 +38,7 @@ public class ConceptLatticeTest {
 
     private int numberOfVertices(Graph graph) {
         int count = 0;
-        for(Vertex vertex : graph.getVertices()) {
+        for(Vertex ignored : graph.getVertices()) {
             count++;
         }
         return count;
@@ -45,7 +46,7 @@ public class ConceptLatticeTest {
 
     private int numberOfEdges(Graph graph) {
         int count = 0;
-        for(Edge edge : graph.getEdges()) {
+        for(Edge ignored : graph.getEdges()) {
             count++;
         }
         return count;
@@ -63,7 +64,7 @@ public class ConceptLatticeTest {
         c4 = new Concept(bitset("01000"), bitset("10000"));
         c5 = new Concept(bitset("10000"), bitset("01111"));
 
-        lattice = new Lattice(graph, c1);
+        lattice = new Lattice<>(graph, c1);
         lattice.insert(graph, c2);
         lattice.insert(graph, c3);
         lattice.insert(graph, c4);
@@ -75,6 +76,9 @@ public class ConceptLatticeTest {
         assertEquals(numberOfEdges(graph), 20);
         assertEquals(lattice.size(), 8);
         assertEquals(lattice.order(), 20);
+        Concept topConcept = lattice.top().getProperty(Lattice.LABEL);
+        assertEquals(topConcept.intent(), bitset("00000"));
+        assertEquals(topConcept.extent(), bitset("11111"));
     }
     @Test
     public void testAddIntent() {
@@ -95,25 +99,51 @@ public class ConceptLatticeTest {
     @Test
     public void testIterator() {
         Lattice.Iterator<Concept> iterator = lattice.iterator();
-        int count = 0;
-        for(; iterator.hasNext(); iterator.next()) { count++; }
+        int count = 1;
+        Concept last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
+        }
+        assertEquals(last, c1);
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
         assertEquals(count, 8);
-        count = 0;
-        iterator = lattice.iterator(c2);
-        for(; iterator.hasNext(); iterator.next()) { count++; }
-        assertEquals(count, 5);
-        // test iterator on empty lattice with just none. Right now I think that doesn't work properly
-        iterator = lattice.iterator();
-        System.out.println("LATTICE");
-        while(iterator.hasNext()) {
-            Concept concept = iterator.next();
-            System.out.println("Concept: " + concept);
-        }
-        System.out.println("DUAL LATTICE");
+        assertEquals(last, new Concept(bitset("11111"), bitset("00000")));
+        // Test iteration in the other direction (dual)
         iterator = lattice.dual().iterator();
-        while(iterator.hasNext()) {
-            Concept concept = iterator.next();
-            System.out.println("Concept: " + concept);
+        count = 1;
+        last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
         }
+        assertEquals(last, new Concept(bitset("11111"), bitset("00000")));
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
+        assertEquals(count, 8);
+        assertEquals(last, new Concept(bitset("00001"), bitset("11111")));
+        // Test iteration from given Concept
+        iterator = lattice.iterator(c3);
+        count = 1;
+        last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
+        }
+        assertEquals(last, c3);
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
+        assertEquals(count, 3);
+        assertEquals(last, c1);
     }
 }

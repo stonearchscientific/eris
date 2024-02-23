@@ -1,6 +1,6 @@
 package com.stonearchscientific.eris;
 
-public class FormatFixture<R extends Relatable> extends DefaultFixture<R> {
+public class FormatFixture<R extends Relatable<R>> extends DefaultFixture<R> {
     protected StringBuilder sb;
     public FormatFixture() {
         super();

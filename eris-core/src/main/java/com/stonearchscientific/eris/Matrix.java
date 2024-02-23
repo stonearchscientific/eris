@@ -1,13 +1,13 @@
 package com.stonearchscientific.eris;
 
-import java.util.Arrays;
-import java.util.List;
+import com.tinkerpop.blueprints.Direction;
+import com.tinkerpop.blueprints.Edge;
+import com.tinkerpop.blueprints.Graph;
+import com.tinkerpop.blueprints.Vertex;
+
 import java.util.ArrayList;
 import java.util.BitSet;
-import com.tinkerpop.blueprints.Graph;
-import com.tinkerpop.blueprints.Edge;
-import com.tinkerpop.blueprints.Vertex;
-import com.tinkerpop.blueprints.Direction;
+import java.util.List;
 public class Matrix {
     public BitSet[] matrix;
 
@@ -22,7 +22,6 @@ public class Matrix {
             }
         }
     }
-
     public Matrix(int n, int m) {
         matrix = new BitSet[n];
         for (int i = 0; i < n; i++) {

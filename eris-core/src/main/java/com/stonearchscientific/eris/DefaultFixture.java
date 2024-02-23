@@ -5,7 +5,7 @@ import com.tinkerpop.blueprints.Vertex;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DefaultFixture<R extends Relatable> extends Fixture<R> {
+public class DefaultFixture<R extends Relatable<R>> extends Fixture<R> {
     public DefaultFixture() {
         super(new DefaultFilter<>(true));
     }

@@ -1,13 +1,11 @@
 package com.stonearchscientific.eris;
 
 import java.util.BitSet;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public final class ConceptTest {
     private Concept w, x, y, z;
@@ -60,13 +58,13 @@ public final class ConceptTest {
     }
     @Test
     public void testEqual() {
-        assertTrue(x.equals(x));
-        assertTrue(Concept.none(BitSet.class).equals(Concept.none(BitSet.class)));
-        assertFalse(x.equals(Concept.none(BitSet.class)));
-        assertFalse(x.equals(y));
-        assertFalse(x.equals(z));
-        assertFalse(x.equals(null));
-        assertFalse(x.equals(new Object()));
+        assertEquals(x, x);
+        assertEquals(Concept.none(), Concept.none());
+        assertNotEquals(x, Concept.none());
+        assertNotEquals(x, y);
+        assertNotEquals(x, z);
+        assertNotEquals(null, x);
+        assertNotEquals(x, new Object());
     }
 
 

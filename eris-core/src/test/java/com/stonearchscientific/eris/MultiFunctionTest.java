@@ -1,14 +1,10 @@
 package com.stonearchscientific.eris;
 
 import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
-import com.google.common.collect.TreeRangeSet;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MultiFunctionTest {
     MultiFunction<LocalDate, Integer> mf;
