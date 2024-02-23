@@ -38,7 +38,7 @@ public class ConceptLatticeTest {
 
     private int numberOfVertices(Graph graph) {
         int count = 0;
-        for(Vertex vertex : graph.getVertices()) {
+        for(Vertex ignored : graph.getVertices()) {
             count++;
         }
         return count;
@@ -46,7 +46,7 @@ public class ConceptLatticeTest {
 
     private int numberOfEdges(Graph graph) {
         int count = 0;
-        for(Edge edge : graph.getEdges()) {
+        for(Edge ignored : graph.getEdges()) {
             count++;
         }
         return count;
@@ -64,7 +64,7 @@ public class ConceptLatticeTest {
         c4 = new Concept(bitset("01000"), bitset("10000"));
         c5 = new Concept(bitset("10000"), bitset("01111"));
 
-        lattice = new Lattice(graph, c1);
+        lattice = new Lattice<>(graph, c1);
         lattice.insert(graph, c2);
         lattice.insert(graph, c3);
         lattice.insert(graph, c4);

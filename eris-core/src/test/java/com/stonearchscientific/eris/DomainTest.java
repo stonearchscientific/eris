@@ -1,13 +1,11 @@
 package com.stonearchscientific.eris;
 
 import com.google.common.collect.Range;
-import static org.junit.Assert.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public final class DomainTest {
     private Domain<Integer, Integer> a, b, c, d, z;
@@ -68,7 +66,7 @@ public final class DomainTest {
         assertEquals(Domain.all(), a);
         assertEquals(Domain.none(), new Domain<>(null, Range.all()));
         assertEquals(b, b);
-        assertFalse(b.equals(c));
+        assertNotEquals(b, c);
 
     }
 
