@@ -42,6 +42,6 @@ public class DefaultFixture<R extends Relatable<R>> extends Fixture<R> {
     }
     @Override
     public boolean finish() {
-        return !collect.isEmpty();
+        return collect.isEmpty();
     }
 }

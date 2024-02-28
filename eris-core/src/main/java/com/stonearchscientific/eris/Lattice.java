@@ -51,7 +51,7 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
         }
         @Override
         public boolean hasNext() {
-            return fixture.finish();
+            return !fixture.finish();
         }
         @Override
         public R next() {
