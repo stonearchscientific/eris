@@ -9,8 +9,6 @@ import java.io.File;
 import java.util.Collection;
 
 public class MultiFunction<C extends Comparable, D extends Comparable> extends AbstractContext<Domain<C, D>> {
-
-
     public MultiFunction() {
         super();
         lattice = new Lattice<>(graph, Domain.none());
@@ -19,18 +17,17 @@ public class MultiFunction<C extends Comparable, D extends Comparable> extends A
     public boolean contains(Object o) {
         return false;
     }
-
     @Override
     public boolean containsAll(Collection<?> c) {
         return false;
     }
     public void draw(final String filename) {
-        DotFormatFixture<Domain<C, D>> fixture = new DotFormatFixture<>();
-        Iterator<Domain<C, D>> iterator = this.iterator(lattice.bottom().getProperty(Lattice.LABEL), fixture);
+        DotFormatFixture<Domain<C, D>> fixture = new DotFormatFixture<>(lattice.bottom());
+        Iterator<Domain<C, D>> iterator = this.iterator(fixture);
         while (iterator.hasNext()) {
             iterator.next();
         }
-        System.out.println(fixture.toString());
+        System.out.println(fixture);
         String graphvizOutput = fixture.toString();
 
         try {
