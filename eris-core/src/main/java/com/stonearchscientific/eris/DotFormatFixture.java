@@ -4,8 +4,8 @@ import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
 public class DotFormatFixture<R extends Relatable<R>> extends FormatFixture<R> {
-    public DotFormatFixture() {
-        super();
+    public DotFormatFixture(final Vertex start) {
+        super(start);
         sb.append("digraph {\n");
     }
     @Override
@@ -28,7 +28,11 @@ public class DotFormatFixture<R extends Relatable<R>> extends FormatFixture<R> {
         return true;
     }
     @Override
-    public void finish() {
-        sb.append("}");
+    public boolean finish() {
+        if(!super.finish()) {
+            sb.append("}");
+            return false;
+        }
+        return true;
     }
 }

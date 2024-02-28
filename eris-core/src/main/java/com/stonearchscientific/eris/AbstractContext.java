@@ -77,8 +77,8 @@ public abstract class AbstractContext<R extends Relatable<R>> implements Collect
         }
         return new Iterator<>(iterator);
     }
-    public Iterator<R> iterator(final R from, final Fixture<R> fixture) {
-        Lattice.Iterator<R> iterator = lattice.iterator(from, fixture);
+    public Iterator<R> iterator(final Fixture<R> fixture) {
+        Lattice.Iterator<R> iterator = lattice.iterator(fixture);
         return new Iterator<>(iterator);
     }
     @Override
