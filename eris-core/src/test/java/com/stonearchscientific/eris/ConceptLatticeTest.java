@@ -146,4 +146,23 @@ public class ConceptLatticeTest {
         assertEquals(count, 3);
         assertEquals(last, c1);
     }
+    @Test
+    public void testDepthFirstIterator() {
+        DefaultFixture<Concept> fixture = new DefaultFixture<Concept>(lattice.bottom(), new DefaultFilter<>(true), true);
+        Lattice.Iterator<Concept> iterator = new Lattice.Iterator<>(fixture);
+        int count = 1;
+        Concept last = null;
+        if(iterator.hasNext()) {
+            last = iterator.next();
+        } else {
+            fail("Iterator should have at least one element");
+        }
+        assertEquals(last, c1);
+        while (iterator.hasNext()) {
+            last = iterator.next();
+            count++;
+        }
+        assertEquals(count, 8);
+        assertEquals(last, new Concept(bitset("01011"), bitset("10000")));
+    }
 }

@@ -29,10 +29,10 @@ public class DotFormatFixture<R extends Relatable<R>> extends FormatFixture<R> {
     }
     @Override
     public boolean finish() {
-        if(super.finish()) {
+        if(!super.finish()) {
             sb.append("}");
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

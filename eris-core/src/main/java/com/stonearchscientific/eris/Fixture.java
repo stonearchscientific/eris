@@ -1,12 +1,9 @@
 package com.stonearchscientific.eris;
 
-import com.tinkerpop.blueprints.Direction;
 import com.tinkerpop.blueprints.Edge;
 import com.tinkerpop.blueprints.Vertex;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Set;
 
 public abstract class Fixture<R extends Relatable<R>>  {
     protected Collection<Vertex> visited;
