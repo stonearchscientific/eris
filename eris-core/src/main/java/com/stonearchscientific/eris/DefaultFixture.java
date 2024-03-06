@@ -13,6 +13,7 @@ import static com.stonearchscientific.eris.Lattice.LABEL;
 
 public class DefaultFixture<R extends Relatable<R>> extends Fixture<R> {
     private final boolean dfs;
+    protected Vertex visiting;
     public DefaultFixture(final Vertex start) {
         this(start, new DefaultFilter<>(true), false);
     }
@@ -34,16 +35,14 @@ public class DefaultFixture<R extends Relatable<R>> extends Fixture<R> {
     }
     @Override
     public R proceed() {
-        Vertex visiting;
         if(dfs) {
             visiting = ((ArrayDeque<Vertex>) collect).pop();
         } else {
             visiting = ((ArrayList<Vertex>) collect).remove(0);
         }
-        R visitingConcept = visiting.getProperty(LABEL);
         for (Edge edge : visiting.getEdges(Direction.BOTH)) {
             Vertex target = edge.getVertex(Direction.OUT);
-            if (this.apply(target, visiting, edge) && !visited.contains(target)) {
+            if (this.apply(target, edge) && !visited.contains(target)) {
                 visited.add(target);
                 if(dfs) {
                     ((ArrayDeque<Vertex>) collect).push(target);
@@ -52,13 +51,12 @@ public class DefaultFixture<R extends Relatable<R>> extends Fixture<R> {
                 }
             }
         }
-        return visitingConcept;
+        return visiting.getProperty(LABEL);
     }
     @Override
-    public boolean apply(final Vertex target, final Vertex source, final Edge edge) {
+    public boolean apply(final Vertex target, final Edge edge) {
         checkNotNull(target);
-        checkNotNull(source);
-        return filter.test(target.getProperty(LABEL), source.getProperty(LABEL));
+        return filter.test(target.getProperty(LABEL), visiting.getProperty(LABEL));
     }
     @Override
     public boolean finish() {

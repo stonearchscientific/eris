@@ -22,7 +22,7 @@ public class MultiFunction<C extends Comparable, D extends Comparable> extends A
         return false;
     }
     public void draw(final String filename) {
-        DotFormatFixture<Domain<C, D>> fixture = new DotFormatFixture<>(lattice.bottom());
+        DotFormatFixture<Domain<C, D>> fixture = new DotFormatFixture<>(lattice.bottom(), lattice.size());
         Iterator<Domain<C, D>> iterator = this.iterator(fixture);
         while (iterator.hasNext()) {
             iterator.next();
