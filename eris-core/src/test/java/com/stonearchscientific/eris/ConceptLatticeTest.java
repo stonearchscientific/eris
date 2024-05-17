@@ -165,4 +165,16 @@ public class ConceptLatticeTest {
         assertEquals(count, 8);
         assertEquals(last, new Concept(bitset("01011"), bitset("10000")));
     }
+    @Test
+    public void testSubLattice() {
+        Graph graph = new TinkerGraph();
+        SubLatticeFixture<Concept> fixture = new SubLatticeFixture<>(graph, lattice.bottom(), lattice.size());
+        Lattice.Iterator<Concept> iterator = new Lattice.Iterator<>(fixture);
+        System.out.println("SubLattice");
+        while(iterator.hasNext()) {
+            Concept next = iterator.next();
+            System.out.println(next);
+        }
+        System.out.println(fixture);
+    }
 }

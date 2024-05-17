@@ -23,6 +23,7 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
         //color = 0;
         this.bottom = graph.addVertex(null);
         this.bottom.setProperty(LABEL, bottom);
+        this.bottom.setProperty("ID", 0);
         //this.bottom.setProperty(COLOR, color);
         //System.out.println("constructor added bottom vertex: " + this.bottom.getProperty(LABEL));
         this.top = this.bottom;
@@ -172,14 +173,16 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
         } // TODO: end
         return added;
     }
-    private Vertex addVertex(final Graph graph, final R label) {
+    public Vertex addVertex(final Graph graph, final R label) { // pass filter as parameter from fixture, possibly have overloaded addVertex for addIntent with default filter
         Vertex child = graph.addVertex(null);
         //System.out.println("addVertex(" + label + ")");
         child.setProperty("label", label);
+        child.setProperty("ID", size);
+        top = filter(top, label) ? child : top;
         ++size;
         return child;
     }
-    private Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
+    public Edge addUndirectedEdge(final Graph graph, final Vertex source, final Vertex target, final String weight) {
         graph.addEdge(null, source, target, weight);
         //System.out.println("addUndirectedEdge(" + source.getProperty(LABEL) + ", " + target.getProperty(LABEL) + ")");
         Edge edge = graph.addEdge(null, target, source, weight);
@@ -252,7 +255,7 @@ public class Lattice<R extends Relatable<R>> implements Iterable<R> {
         Vertex child = addVertex(graph, proposed.union(generatorLabel));
         addUndirectedEdge(graph, generator, child, "");
 
-        top = filter(top, proposed) ? child : top;
+
 
         for (Vertex parent : parents) {
             if (!parent.equals(generator)) {
