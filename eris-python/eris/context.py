@@ -1,5 +1,5 @@
 from jpype import JClass
-from abstract_context import AbstractContext
+from eris.abstract_context import AbstractContext
 
 import graphviz
 class Context(AbstractContext):
@@ -14,6 +14,7 @@ class Context(AbstractContext):
         self.java_attributes = JClass('java.util.ArrayList')(attributes)
         self.java_relation = JClass('com.stonearchscientific.eris.Matrix')(relation)
         self.java_context = JClass('com.stonearchscientific.eris.Context')(self.java_objects, self.java_attributes, self.java_relation)
+
 
     def decode(self, concept):
         if not isinstance(concept, JClass('com.stonearchscientific.eris.Concept')):
