@@ -1,11 +1,11 @@
 import pytest
 import jpype.imports
 from bitarray import bitarray
-from concept import Concept
+from eris.concept import Concept
 
-eris = './eris-core/target/eris-core-1.0.0.jar'
-blueprints = './eris-core/external/blueprints-core-2.6.0.jar'
-guava = './eris-core/external/guava-31.0.1-jre.jar'
+eris = '../../eris-core/target/eris-core-1.0-SNAPSHOT.jar'
+blueprints = '../../eris-core/external/blueprints-core-2.6.0.jar'
+guava = '../../eris-core/external/guava-31.0.1-jre.jar'
 
 jpype.startJVM(classpath=[eris, blueprints, guava, 'classes'], convertStrings=False)
 class TestConcept:

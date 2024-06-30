@@ -1,10 +1,12 @@
 import jpype.imports
+from bitarray import bitarray
 from jpype import JClass
-from context import Context
+from eris.context import Context
+from eris.concept import Concept
 
-eris = './eris-core/target/eris-core-1.0-SNAPSHOT.jar'
-blueprints = './eris-core/external/blueprints-core-2.6.0.jar'
-guava = './eris-core/external/guava-31.0.1-jre.jar'
+eris = '../../eris-core/target/eris-core-1.0-SNAPSHOT.jar'
+blueprints = '../../eris-core/external/blueprints-core-2.6.0.jar'
+guava = '../../eris-core/external/guava-31.0.1-jre.jar'
 
 jpype.startJVM(classpath=[eris, blueprints, guava, 'classes'], convertStrings=False)
 
@@ -18,6 +20,12 @@ relation = [
     [1, 1, 1, 1, 0]
 ]
 
+extent = bitarray('1001')
+intent = bitarray('0110')
+concept = Concept(extent, intent)
+print(f"concept.extent : {concept.extent}")
+print(f"concept.intent : {concept.intent}")
+print(f"concept : {concept}")
 #relation = Matrix(example)
 #objects = JClass('java.util.ArrayList')(["1", "2", "3", "4", "5"])
 #attributes = JClass('java.util.ArrayList')(["a", "b", "c", "d", "e"])
