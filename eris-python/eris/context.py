@@ -22,7 +22,15 @@ class Context(AbstractContext):
         decoded_extent = list(self.java_context.decodeObjects(concept.extent()))
         decoded_intent = list(self.java_context.decodeAttributes(concept.intent()))
         return [decoded_extent, decoded_intent]
-
+    def find(self, search_attributes):
+        search_concept = self.java_context.find(JClass('java.util.ArrayList')(search_attributes))
+        return self.decode(search_concept)
+    def support(self, left, right):
+        return self.java_context.support(JClass('java.util.ArrayList')(left), JClass('java.util.ArrayList')(right));
+    def confidence(self, left, right):
+        return self.java_context.confidence(JClass('java.util.ArrayList')(left), JClass('java.util.ArrayList')(right));
+    def lift(self, left, right):
+        return self.java_context.lift(JClass('java.util.ArrayList')(left), JClass('java.util.ArrayList')(right));
     def draw(self):
         filename = 'context.dot'
         f = open(filename, 'w', encoding='utf-8')
