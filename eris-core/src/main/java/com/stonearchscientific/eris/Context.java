@@ -10,6 +10,9 @@ import guru.nidi.graphviz.parse.Parser;
 
 import java.io.File;
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Context<P, Q> extends AbstractContext<Concept> {
     private final List<P> objects;
     private final List<Q> attributes;
@@ -33,6 +36,13 @@ public class Context<P, Q> extends AbstractContext<Concept> {
             decodedAttributes.add(this.attributes.get(i));
         }
         return decodedAttributes;
+    }
+    public BitSet encodeAttributes(List<Q> attributes) {
+        BitSet encodedAttributes = new BitSet();
+        for (Q attribute : attributes) {
+            encodedAttributes.set(this.attributes.indexOf(attribute));
+        }
+        return encodedAttributes;
     }
     public Matrix relation() { return relation; }
     public String graphviz() {
@@ -90,7 +100,35 @@ public class Context<P, Q> extends AbstractContext<Concept> {
             lattice.insert(graph, concept);
         }
     }
-
+    public Concept top() {
+        return lattice.top().getProperty(Lattice.LABEL);
+    }
+    public Concept bottom() {
+        return lattice.bottom().getProperty(Lattice.LABEL);
+    }
+    public Concept find(final List<Q> searchAttributes) {
+        BitSet search = encodeAttributes(searchAttributes);
+        return lattice.find(new Concept(new BitSet(), search));
+    }
+    public double support(final List<Q> left, final List<Q> right) {
+        checkNotNull(left);
+        checkNotNull(right);
+        BitSet intersection = (BitSet) find(left).extent().clone();
+        intersection.and(find(right).extent());
+        return (double) intersection.cardinality() / top().extent().cardinality();
+    }
+    public double support(final List<Q> left) {
+        return support(left, new ArrayList<>());
+    }
+    public double confidence(final List<Q> left, final List<Q> right) {
+        return support(left, right) / support(left);
+    }
+    public double lift(final List<Q> left, final List<Q> right) {
+        return confidence(left, right) / support(right);
+    }
+    public double conviction(final List<Q> left, final List<Q> right) {
+        return (1 - support(right)) / (1 - confidence(left, right));
+    }
     @Override
     public boolean contains(Object o) {
         if (o instanceof Concept) {
