@@ -4,9 +4,9 @@ from jpype import JClass
 from eris.context import Context
 from eris.concept import Concept
 
-eris = '../../eris-core/target/eris-core-1.0-SNAPSHOT.jar'
-blueprints = '../../eris-core/external/blueprints-core-2.6.0.jar'
-guava = '../../eris-core/external/guava-31.0.1-jre.jar'
+eris = '../../lib/eris-core-1.0-SNAPSHOT.jar'
+blueprints = '../../lib/blueprints-core-2.6.0.jar'
+guava = '../../lib/guava-31.0.1-jre.jar'
 
 jpype.startJVM(classpath=[eris, blueprints, guava, 'classes'], convertStrings=False)
 
@@ -29,16 +29,19 @@ print(f"concept : {concept}")
 #relation = Matrix(example)
 #objects = JClass('java.util.ArrayList')(["1", "2", "3", "4", "5"])
 #attributes = JClass('java.util.ArrayList')(["a", "b", "c", "d", "e"])
-context = Context(["1", "2", "3", "4", "5"], ["a", "b", "c", "d", "e"], relation)
+context = Context(["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"], relation)
 
 #iterator = context.iterator()
 #while iterator.hasNext():
 #    print(f"Concept : {iterator.next()}")
 
+concepts = []
 for item in context.items():
+    concepts.append(item)
     print(f"java class : {type(item)}")
     print(f"encoded extent: {item.extent()}")
     print(f"encoded intent: {item.intent()}")
     print(f"decoded concept : {context.decode(item)}")
 
-context.draw()
+print(f"p(ab|c) : {context.confidence(['c'], ['a', 'b'])}")
+#context.draw()
